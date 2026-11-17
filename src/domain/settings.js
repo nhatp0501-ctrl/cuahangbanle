@@ -45,7 +45,11 @@
     importBackup(value) {
       this.admin();
       validateBackup(value);
-      const copy = clone(value);
+      const copy =
+        typeof module !== 'undefined' && module.exports
+          ? require('./migrations.js').migrateData(value)
+          : scope.Retail.migrateData(value);
+      validateBackup(copy);
       return this.commit('Khôi phục dữ liệu', 'Nhập tệp sao lưu', () => {
         const username = this.user.username;
         copy.revision = this.data.revision;

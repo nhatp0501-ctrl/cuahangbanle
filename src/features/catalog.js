@@ -97,6 +97,31 @@ function entitiesView(type) {
             ],
           ];
   let headers, rows;
+  if (type === 'products')
+    fields +=
+      field(
+        'Đường dẫn ảnh bao bì local',
+        'image',
+        v.image || 'assets/product-placeholder.svg',
+        'text',
+        'maxlength="200"',
+        true,
+      ) +
+      selectField(
+        'Quản lý HSD theo lô',
+        'tracksExpiry',
+        [
+          ['true', 'Có — hàng tiêu dùng'],
+          ['false', 'Không — giấy/đồ dùng không HSD'],
+        ],
+        String(v.tracksExpiry !== false),
+        '',
+        true,
+      ) +
+      (!recordId
+        ? field('Mã lô tồn đầu kỳ', 'lotCode', '', 'text', '', false) +
+          field('HSD lô tồn đầu kỳ', 'expiryDate', '', 'date')
+        : '');
   if (type === 'suppliers') {
     headers = [
       'Mã NCC',

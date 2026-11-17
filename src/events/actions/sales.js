@@ -1,5 +1,36 @@
 function handleSalesAction(a) {
   switch (a.action) {
+    case 'choose-product':
+      quantityModal(a.id);
+      break;
+    case 'quantity-preset':
+      $('#quantity-input').value = a.qty;
+      break;
+    case 'pos-page':
+      posProductPage += Number(a.delta);
+      render();
+      break;
+    case 'discount-tab':
+      discountTab = a.kind;
+      if (a.kind === 'none')
+        changeDraft((d) => {
+          d.discountSelection = { kind: 'none', id: '' };
+        });
+      else render();
+      break;
+    case 'discount-clear':
+      discountTab = 'none';
+      changeDraft((d) => {
+        d.discountSelection = { kind: 'none', id: '' };
+      });
+      break;
+    case 'voucher-apply': {
+      const code = $('#voucher-code').value.trim().toUpperCase(),
+        v = store.data.vouchers.find((v) => v.code === code);
+      if (!v) throw new Error('Không tìm thấy mã voucher.');
+      applyDiscount('voucher', v.id);
+      break;
+    }
     case 'customer-select':
       selectPhoneCustomer(a.id);
       break;
@@ -8,6 +39,7 @@ function handleSalesAction(a) {
       clearPhoneCustomer();
       break;
     case 'category':
+      posProductPage = 1;
       activeCategory = a.category;
       render();
       break;

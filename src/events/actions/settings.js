@@ -1,5 +1,19 @@
 function handleSettingsAction(a) {
   switch (a.action) {
+    case 'discount-manage-tab':
+      discountManagementTab = a.tab;
+      pagination = {};
+      render();
+      break;
+    case 'discount-new':
+      discountModal(a.kind);
+      break;
+    case 'discount-edit':
+      discountModal(a.kind, a.id);
+      break;
+    case 'promotion-lot':
+      discountModal('promotion', '', a.id);
+      break;
     case 'branch-new':
       branchModal();
       break;

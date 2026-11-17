@@ -24,9 +24,24 @@
       let v = clone(values);
       v.name = v.name.trim();
       if (type === 'products') {
+        v.icon ??= '';
+        v.image ||= 'assets/product-placeholder.svg';
         v.price = integer(v.price, 'Giá bán');
         v.cost = integer(v.cost, 'Giá vốn');
         v.minStock = integer(v.minStock, 'Ngưỡng cảnh báo');
+        v.tracksExpiry = v.tracksExpiry !== false;
+        if (!existing && Number(v.stock) > 0 && v.tracksExpiry) {
+          const valid =
+            typeof module !== 'undefined' && module.exports
+              ? require('./config.js').validDate
+              : scope.Retail.validDate;
+          assert(valid(v.expiryDate), 'Nhập HSD lô tồn đầu kỳ.');
+        }
+        if (v.image)
+          assert(
+            /^assets\/(?:products\/[a-zA-Z0-9._-]+|product-placeholder\.svg)$/.test(v.image),
+            'Chọn ảnh trong thư mục sản phẩm.',
+          );
         assert(v.category?.trim() && v.barcode?.trim(), 'Nhập danh mục và mã vạch.');
         assert(
           !collection.some((p) => p.id !== v.id && p.barcode === v.barcode.trim()),
@@ -81,18 +96,15 @@
         const prefix = { products: 'SP', suppliers: 'NCC', customers: 'KH', staff: 'NV' }[type];
         const record = { ...v, id: id(prefix), createdAt: now() };
         collection.push(record);
-        if (type === 'products' && v.stock)
-          this.data.movements.unshift({
-            id: id('GD'),
-            time: now(),
-            productId: record.id,
-            productName: record.name,
-            delta: v.stock,
-            balance: v.stock,
-            reason: 'Tồn đầu kỳ',
-            reference: record.id,
-            actor: this.user.name,
+        if (type === 'products' && v.stock) {
+          record.stock = 0;
+          this.addLot(record.id, {
+            qty: v.stock,
+            code: v.lotCode || 'TONDAU-' + record.id,
+            expiryDate: v.expiryDate || null,
+            sourceId: record.id,
           });
+        }
         return record;
       });
     },

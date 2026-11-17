@@ -38,10 +38,10 @@ function returnsView() {
       ],
     ]) +
     `<section class="panel"><div class="panel-head"><h2>Lịch sử yêu cầu trả hàng</h2></div><div class="table-tools">${filterInput('returns', 'Tìm mã phiếu, hóa đơn gốc, lý do…')}${filterSelect('status', [['', 'Tất cả trạng thái'], ...['pending', 'approved', 'rejected'].map((x) => [x, statusLabels[x][0]])])}</div>${table(
-      ['Mã phiếu', 'Hóa đơn gốc', 'Ngày tạo', 'Lý do', 'Tiền đã hoàn', 'Trạng thái', ''],
+      ['Mã phiếu', 'Hóa đơn gốc', 'Phạm vi', 'Ngày tạo', 'Lý do', 'Tiền đã hoàn', 'Trạng thái', ''],
       p.items.map(
         (r) =>
-          `<tr><td class="name">${e(r.id)}</td><td>${e(r.orderId)}</td><td>${date(r.time)}</td><td>${e(r.reason)}</td><td class="money">${money(r.amount)}</td><td>${status(r.status)}</td><td>${action('return-detail', 'Xem', '', 'small', `data-id="${e(r.id)}"`)}</td></tr>`,
+          `<tr><td class="name">${e(r.id)}</td><td>${e(r.orderId)}</td><td>${r.scope === 'full' ? 'Toàn bộ' : 'Một phần'}</td><td>${date(r.time)}</td><td>${e(r.reason)}</td><td class="money">${money(r.amount)}</td><td>${status(r.status)}</td><td>${action('return-detail', 'Xem', '', 'small', `data-id="${e(r.id)}"`)}</td></tr>`,
       ),
     )}${p.foot}<div class="panel-body"><div class="note yellow">Yêu cầu chờ duyệt chưa hoàn tiền và chưa cộng tồn kho. Hàng còn bán được mới nhập lại kho. Để đổi sang sản phẩm khác, hoàn trả hóa đơn cũ rồi tạo đơn bán mới.</div></div></section>`
   );

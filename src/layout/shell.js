@@ -51,6 +51,7 @@ function render() {
     reports: reportsView,
     branches: branchesView,
     settings: settingsView,
+    promotions: promotionsView,
   };
   $('#content').innerHTML =
     views[page]() +

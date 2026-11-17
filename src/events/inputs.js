@@ -7,6 +7,13 @@ document.addEventListener('input', (event) => {
   }
   if (el.id === 'global-search') globalSearch(el.value);
   if (el.id === 'cash-input') updateCash();
+  if (el.dataset.listFilter !== undefined) {
+    const area = el.closest('.modal-content') || el.parentElement;
+    $$('[data-product-search]', area).forEach(
+      (row) => (row.hidden = !match(row.dataset.productSearch, el.value)),
+    );
+  }
+  if (el.dataset.receiptField) updateReceiptEntry(el.closest('[data-receipt-product]'));
   if (el.id === 'customer-phone-search') {
     try {
       searchCustomerPhone(el);
@@ -23,13 +30,10 @@ document.addEventListener('change', async (event) => {
       pagination = {};
       render();
     }
-    if (el.id === 'cart-discount') {
-      const value = Number(el.value);
-      changeDraft((d) => {
-        totals(d.items, value, store.data.settings.taxRate);
-        d.discount = value;
-      });
+    if (el.dataset.cartQuantity) {
+      setCartQuantity(el.dataset.cartQuantity, Number(el.value));
     }
+    if (el.id === 'cart-promotion' && el.value) applyDiscount('promotion', el.value);
     if (el.id === 'cart-note') changeDraft((d) => (d.note = el.value));
     if (el.id === 'purchase-supplier') updatePurchaseOptions();
     if (el.id === 'purchase-product')
@@ -80,7 +84,7 @@ document.addEventListener('change', async (event) => {
     }
   } catch (error) {
     notify(error.message, true);
-    if (['cart-discount', 'cart-note', 'cart-customer'].includes(el.id)) render();
+    if (['cart-note', 'cart-promotion'].includes(el.id) || el.dataset.cartQuantity) render();
     if (el.id === 'restore-file') el.value = '';
   }
 });

@@ -2,8 +2,8 @@ function notify(message, error = false) {
   const n = document.createElement('div');
   n.className = 'toast' + (error ? ' error' : '');
   n.textContent = message;
-  $('#toasts').append(n);
-  setTimeout(() => n.remove(), 4500);
+  $('#toasts').replaceChildren(n);
+  setTimeout(() => n.remove(), 3200);
 }
 
 function showModal(title, html, wide = false) {

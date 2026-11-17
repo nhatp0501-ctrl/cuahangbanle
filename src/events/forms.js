@@ -2,8 +2,14 @@ document.addEventListener('submit', (event) => {
   const form = event.target;
   if (!form.id) return;
   event.preventDefault();
+  if (form.dataset.submitting === 'true') return;
+  form.dataset.submitting = 'true';
+  const submitButtons = $$('button[type="submit"]', form),
+    disabledStates = submitButtons.map((b) => b.disabled);
+  submitButtons.forEach((b) => (b.disabled = true));
   const v = dataForm(form);
   try {
+    if (handleRetailForm(form, v, event)) return;
     switch (form.id) {
       case 'login-form':
         store.login(v.username.trim(), v.password);
@@ -21,6 +27,7 @@ document.addEventListener('submit', (event) => {
           received: Number(v.received || 0),
           paymentRef: v.paymentRef || '',
           confirmed: v.confirmed === 'on',
+          checkoutKey: v.checkoutKey,
         });
         render();
         orderDetail(o.id);
@@ -29,7 +36,11 @@ document.addEventListener('submit', (event) => {
       }
       case 'entity-form': {
         const type = modalContext.entity;
-        const values = { ...v, active: v.active === 'true' };
+        const values = {
+          ...v,
+          active: v.active === 'true',
+          ...(v.tracksExpiry !== undefined ? { tracksExpiry: v.tracksExpiry === 'true' } : {}),
+        };
         if (modalContext.id) values.id = modalContext.id;
         store.upsert(type, values);
         closeModal();
@@ -37,12 +48,6 @@ document.addEventListener('submit', (event) => {
         notify('Đã lưu thông tin.');
         break;
       }
-      case 'audit-form':
-        store.audit([{ id: v.productId, actual: Number(v.counted) }], v.reason);
-        closeModal();
-        render();
-        notify('Đã xác nhận kiểm kê và cập nhật tồn kho.');
-        break;
       case 'purchase-form':
         store.createPurchase(v.supplierId, purchaseLines, v.note || '', v.status);
         closeModal();
@@ -96,5 +101,8 @@ document.addEventListener('submit', (event) => {
     const target = $('#form-error', form) || $('#login-error', form);
     if (target) target.textContent = error.message;
     else notify(error.message, true);
+  } finally {
+    form.dataset.submitting = 'false';
+    if (form.isConnected) submitButtons.forEach((b, index) => (b.disabled = disabledStates[index]));
   }
 });

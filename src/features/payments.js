@@ -1,9 +1,9 @@
 function checkoutModal(method = 'cash') {
   modalContext = { type: 'checkout', method };
-  const t = totals(store.data.draft.items, store.data.draft.discount, store.data.settings.taxRate);
+  const t = store.quoteDraft();
   showModal(
     'Thanh toán đơn hàng',
-    `<form id="checkout-form"><div class="modal-content"><div class="payment-total">TỔNG SỐ TIỀN THANH TOÁN<b>${money(t.total)}</b></div><div class="payment-methods">${Object.entries(
+    `<form id="checkout-form"><input type="hidden" name="checkoutKey" value="${e(store.data.draft.checkoutKey)}"><div class="modal-content"><div class="note mb16">Thanh toán đủ toàn bộ hóa đơn trong một lần, bằng một phương thức. Không ghi nợ hoặc chia tiền.</div><div class="payment-total">TỔNG SỐ TIỀN THANH TOÁN<b>${money(t.total)}</b></div><div class="payment-methods">${Object.entries(
       METHODS,
     )
       .map(
@@ -24,11 +24,7 @@ function checkoutModal(method = 'cash') {
 function updateCash() {
   const input = $('#cash-input');
   if (input) {
-    const t = totals(
-      store.data.draft.items,
-      store.data.draft.discount,
-      store.data.settings.taxRate,
-    ).total;
+    const t = store.quoteDraft().total;
     $('#cash-change').textContent = money(Math.max(0, Number(input.value) - t));
   }
 }

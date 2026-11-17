@@ -7,9 +7,10 @@
           ...require('./calculations.js'),
           ...require('./seed.js'),
           ...require('./backup.js'),
+          ...require('./migrations.js'),
         }
       : scope.Retail;
-  const { KEY, clone, now, id, assert, seed, validateBackup } = api;
+  const { KEY, clone, now, id, assert, seed, validateBackup, migrateData } = api;
   class Store {
     constructor(storage) {
       this.storage = storage;
@@ -18,11 +19,16 @@
       let raw = null;
       try {
         raw = storage.getItem(KEY);
-        this.data = raw ? validateBackup(JSON.parse(raw)) : seed();
-        if (!raw) storage.setItem(KEY, JSON.stringify(this.data));
+        const before = raw ? JSON.parse(raw) : seed();
+        if (raw) validateBackup(before);
+        this.data = validateBackup(migrateData(before, { fresh: !raw }));
+        if (raw && before.schema === 1 && !storage.getItem(KEY + '.before-v2'))
+          storage.setItem(KEY + '.before-v2', raw);
+        if (!raw || JSON.stringify(before) !== JSON.stringify(this.data))
+          storage.setItem(KEY, JSON.stringify(this.data));
       } catch (e) {
         this.loadError = `Không đọc hoặc lưu được dữ liệu: ${e.message}`;
-        this.data = seed();
+        this.data = migrateData(seed(), { fresh: true });
         this.readOnly = true;
       }
     }
@@ -59,7 +65,17 @@
       }
     }
   }
-  const groups = ['auth', 'sales', 'inventory', 'returns', 'catalog', 'purchases', 'settings'];
+  const groups = [
+    'auth',
+    'lots',
+    'discounts',
+    'sales',
+    'inventory',
+    'returns',
+    'catalog',
+    'purchases',
+    'settings',
+  ];
   for (const name of groups)
     Object.assign(
       Store.prototype,

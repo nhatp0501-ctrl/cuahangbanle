@@ -2,7 +2,9 @@ function dashboardView() {
   const s = store.data,
     today = periodData(1),
     low = s.products.filter((p) => p.active && p.stock <= p.minStock),
-    pending = s.purchases.filter((p) => p.status === 'pending'),
+    pending = s.purchases.filter((p) =>
+      ['submitted', 'receipt_pending', 'partially_received'].includes(p.status),
+    ),
     refund = s.returns.filter((r) => r.status === 'pending');
   const methods = Object.keys(METHODS).map((m, i) => ({
     label: METHODS[m],
@@ -56,6 +58,6 @@ function dashboardView() {
       )
       .join(
         '',
-      )}${pending.length ? `<div class="alert-item"><div class="stat-icon">${icon('truck')}</div><div><strong>${pending.length} phiếu nhập chờ nhận</strong><small>Kiểm tra và xác nhận nhập kho</small></div>${ib('navigate', 'arrow', 'Xem phiếu nhập', 'data-page="purchases"')}</div>` : ''}${refund.length ? `<div class="alert-item"><div class="stat-icon">${icon('return')}</div><div><strong>${refund.length} yêu cầu hoàn tiền</strong><small>Cần quản trị viên phê duyệt</small></div>${ib('navigate', 'arrow', 'Xem yêu cầu trả hàng', 'data-page="returns"')}</div>` : ''}${!low.length && !pending.length && !refund.length ? empty('Mọi thứ đang ổn', 'Chưa có công việc cần xử lý.', 'check') : ''}</div></section></div>`
+      )}${pending.length ? `<div class="alert-item"><div class="stat-icon">${icon('truck')}</div><div><strong>${pending.length} phiếu nhập cần xử lý</strong><small>Kiểm tra và xác nhận nhập kho</small></div>${ib('navigate', 'arrow', 'Xem phiếu nhập', 'data-page="purchases"')}</div>` : ''}${refund.length ? `<div class="alert-item"><div class="stat-icon">${icon('return')}</div><div><strong>${refund.length} yêu cầu hoàn tiền</strong><small>Cần quản trị viên phê duyệt</small></div>${ib('navigate', 'arrow', 'Xem yêu cầu trả hàng', 'data-page="returns"')}</div>` : ''}${!low.length && !pending.length && !refund.length ? empty('Mọi thứ đang ổn', 'Chưa có công việc cần xử lý.', 'check') : ''}</div></section></div>`
   );
 }

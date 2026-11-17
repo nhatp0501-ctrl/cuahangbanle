@@ -1,9 +1,14 @@
 function pendingPurchaseQuantity(productId) {
   return store.data.purchases
-    .filter((p) => p.status === 'pending')
+    .filter((p) =>
+      ['submitted', 'approved', 'receipt_pending', 'partially_received'].includes(p.status),
+    )
     .reduce(
       (total, p) =>
-        total + p.items.filter((i) => i.id === productId).reduce((n, i) => n + i.qty, 0),
+        total +
+        p.items
+          .filter((i) => i.id === productId)
+          .reduce((n, i) => n + Math.max(0, i.qty - (i.receivedQty || 0)), 0),
       0,
     );
 }
@@ -32,10 +37,10 @@ function restockSuggestionsHTML() {
         const supplier = store.data.suppliers.find((s) => s.id === p.supplierId);
         const pending = pendingPurchaseQuantity(p.id),
           recommended = restockQuantity(p);
-        return `<article class="restock-card"><div class="row"><span class="product-thumb">${e(p.icon)}</span><div>
+        return `<article class="restock-card"><div class="row">${productImage(p, 'product-thumb')}<div>
         <h3>${e(p.name)}</h3><p class="sub">${e(supplier?.name || 'Chưa có nhà cung cấp')}</p>
         </div></div><div class="restock-levels"><span>Còn <b class="negative">${p.stock}</b></span><span>Ngưỡng tối thiểu <b>${p.minStock}</b></span></div>
-        ${pending ? `<p class="sub">Đang chờ nhập: <strong>${pending}</strong> sản phẩm</p>` : ''}
+        ${pending ? `<p class="sub">Đã đề nghị/chờ giao: <strong>${pending}</strong> sản phẩm</p>` : ''}
         <p class="restock-recommended">${recommended ? `Gợi ý nhập thêm <strong>${recommended}</strong> sản phẩm` : 'Hàng chờ nhập đã đủ mức bổ sung gợi ý'}</p>
         ${action('purchase-restock', recommended ? 'Nhập mặt hàng này' : 'Nhập thêm', 'plus', 'primary small', `data-id="${e(p.id)}" ${supplier?.active ? '' : 'disabled'}`)}
         ${!supplier?.active ? '<p class="sub negative">Nhà cung cấp đã ngừng hợp tác</p>' : ''}
@@ -56,7 +61,7 @@ function renderSupplierRestockSuggestions() {
       .map((p) => {
         const added = purchaseLines.some((i) => i.id === p.id);
         return `<button type="button" class="supplier-restock-item" data-action="purchase-add-suggestion" data-id="${e(p.id)}" ${added ? 'disabled' : ''}>
-        <span><strong>${e(p.name)}</strong><small>Còn ${p.stock} · Ngưỡng ${p.minStock} · Chờ nhập ${pendingPurchaseQuantity(p.id)}</small></span>
+        <span><strong>${e(p.name)}</strong><small>Còn ${p.stock} · Ngưỡng ${p.minStock} · Đề nghị/chờ giao ${pendingPurchaseQuantity(p.id)}</small></span>
         <span>${added ? 'Đã thêm' : `+ ${restockQuantity(p) || 1}`}</span></button>`;
       })
       .join('')}</div>`;

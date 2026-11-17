@@ -47,10 +47,10 @@ function productsView() {
         ['no', 'Ngừng kinh doanh'],
       ],
     )}</div>${table(
-      ['Sản phẩm', 'Mã sản phẩm', 'Danh mục', 'Giá bán', 'Tồn kho', 'Trạng thái', ''],
+      ['Sản phẩm', 'Mã sản phẩm', 'Danh mục', 'Giá bán', 'Tồn vật lý / bán được', 'Trạng thái', ''],
       p.items.map(
         (item) =>
-          `<tr><td class="name"><div class="product-cell"><div class="product-thumb">${e(item.icon)}</div><div>${e(item.name)}<div class="sub">${e(item.barcode)}</div></div></div></td><td>${e(item.id)}</td><td>${e(item.category)}</td><td class="money name">${money(item.price)}</td><td class="${item.stock <= item.minStock ? 'negative' : ''}">${item.stock} ${item.stock <= item.minStock ? '<span class="badge yellow">Thấp</span>' : ''}</td><td>${item.active ? badge('Đang bán') : badge('Ngừng bán', 'gray')}</td><td>${store.user.role === 'ADMIN' ? ibEntity('products', item.id) : ''}</td></tr>`,
+          `<tr><td class="name"><div class="product-cell">${productImage(item, 'product-thumb')}<div>${e(item.name)}<div class="sub">${e(item.barcode)}</div></div></div></td><td>${e(item.id)}</td><td>${e(item.category)}</td><td class="money name">${money(item.price)}</td><td class="${item.stock <= item.minStock ? 'negative' : ''}">${item.stock} / ${store.saleableStock(item.id)} ${item.stock <= item.minStock ? '<span class="badge yellow">Thấp</span>' : ''}</td><td>${item.active ? badge('Đang bán') : badge('Ngừng bán', 'gray')}</td><td>${store.user.role === 'ADMIN' ? ibEntity('products', item.id) : ''}</td></tr>`,
       ),
     )}${p.foot}</section>`
   );

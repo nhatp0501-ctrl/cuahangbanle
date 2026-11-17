@@ -131,6 +131,7 @@ const pages = [
   ['staff', 'Nhân viên & tài khoản', 'user'],
   ['returns', 'Đổi trả & hoàn tiền', 'return'],
   ['reports', 'Báo cáo doanh thu', 'chart', 'QUẢN TRỊ'],
+  ['promotions', 'Voucher & khuyến mãi', 'receipt'],
   ['branches', 'Chi nhánh', 'branch'],
   ['settings', 'Cấu hình hệ thống', 'settings'],
 ];

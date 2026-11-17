@@ -48,6 +48,10 @@
           reason: reason.trim(),
           restock: !!restock,
           status: 'pending',
+          scope:
+            items.reduce((a, i) => a + i.qty, 0) === o.items.reduce((a, i) => a + i.qty, 0)
+              ? 'full'
+              : 'partial',
           amount: 0,
           actor: this.user.name,
           payment: o.payment,
@@ -81,11 +85,12 @@
             amount += value;
             item.refund = value;
             original.returnedQty += item.qty;
-            if (r.restock) this.move(item.id, item.qty, 'Nhận lại hàng trả', r.id);
+            if (r.restock)
+              this.restoreReturnStock(original, item.qty, original.returnedQty - item.qty, r.id);
           });
           r.amount = amount;
           r.status = 'approved';
-          o.status = o.items.every((i) => i.returnedQty === i.qty) ? 'refunded' : 'partial';
+          o.status = 'completed';
         } else r.status = 'rejected';
         r.resolvedAt = now();
         r.approver = this.user.name;

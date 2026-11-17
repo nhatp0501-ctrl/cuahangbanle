@@ -15,7 +15,9 @@ function createServer() {
     const target = path.resolve(__dirname, '.' + (pathname === '/' ? '/index.html' : pathname));
     if (
       !target.startsWith(__dirname + path.sep) ||
-      !['.html', '.js', '.css', '.svg', '.png', '.ico'].includes(path.extname(target))
+      !['.html', '.js', '.css', '.svg', '.png', '.jpg', '.jpeg', '.webp', '.ico'].includes(
+        path.extname(target),
+      )
     ) {
       res.writeHead(404);
       res.end('Not found');
@@ -27,6 +29,9 @@ function createServer() {
       '.js': 'application/javascript; charset=utf-8',
       '.svg': 'image/svg+xml',
       '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.webp': 'image/webp',
       '.ico': 'image/x-icon',
     };
     fs.readFile(target, (err, data) => {
