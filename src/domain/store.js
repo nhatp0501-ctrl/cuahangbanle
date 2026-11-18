@@ -22,8 +22,12 @@
         const before = raw ? JSON.parse(raw) : seed();
         if (raw) validateBackup(before);
         this.data = validateBackup(migrateData(before, { fresh: !raw }));
-        if (raw && before.schema === 1 && !storage.getItem(KEY + '.before-v2'))
-          storage.setItem(KEY + '.before-v2', raw);
+        if (
+          raw &&
+          before.schema < 3 &&
+          !storage.getItem(KEY + '.before-v' + (before.schema === 1 ? 2 : 3))
+        )
+          storage.setItem(KEY + '.before-v' + (before.schema === 1 ? 2 : 3), raw);
         if (!raw || JSON.stringify(before) !== JSON.stringify(this.data))
           storage.setItem(KEY, JSON.stringify(this.data));
       } catch (e) {
@@ -40,6 +44,8 @@
         !this.readOnly,
         'Dữ liệu đang ở chế độ chỉ đọc vì bộ nhớ gặp lỗi. Hãy sao lưu và kiểm tra bộ nhớ trình duyệt.',
       );
+      // Các bước tạo lô bên trong duyệt phiếu phải cùng một lần lưu nguyên khối.
+      if (this.inTransaction) return fn();
       const raw = this.storage.getItem(KEY);
       assert(
         !raw || JSON.parse(raw).revision === this.data.revision,
@@ -47,6 +53,7 @@
       );
       const before = clone(this.data);
       try {
+        this.inTransaction = true;
         const result = fn();
         this.data.logs.unshift({
           id: id('LOG'),
@@ -62,6 +69,8 @@
       } catch (e) {
         this.data = before;
         throw e;
+      } finally {
+        this.inTransaction = false;
       }
     }
   }
@@ -71,7 +80,7 @@
     'discounts',
     'sales',
     'inventory',
-    'returns',
+    'reconciliation',
     'catalog',
     'purchases',
     'settings',

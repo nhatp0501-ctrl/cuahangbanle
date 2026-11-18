@@ -209,7 +209,11 @@
           demo: true,
         });
     }
-    s.schema = 2;
+    const { migrateOperations } =
+      typeof module !== 'undefined' && module.exports
+        ? require('./operational-migrations.js')
+        : scope.Retail;
+    migrateOperations(s);
     if (oldSchema)
       s.logs.unshift({
         id: id('LOG'),

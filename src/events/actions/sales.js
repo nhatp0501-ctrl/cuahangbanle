@@ -12,16 +12,16 @@ function handleSalesAction(a) {
       break;
     case 'discount-tab':
       discountTab = a.kind;
-      if (a.kind === 'none')
+      if (['none', 'auto'].includes(a.kind))
         changeDraft((d) => {
-          d.discountSelection = { kind: 'none', id: '' };
+          d.discountSelection = { kind: a.kind, id: '' };
         });
       else render();
       break;
     case 'discount-clear':
-      discountTab = 'none';
+      discountTab = 'auto';
       changeDraft((d) => {
-        d.discountSelection = { kind: 'none', id: '' };
+        d.discountSelection = { kind: 'auto', id: '' };
       });
       break;
     case 'voucher-apply': {
@@ -97,6 +97,7 @@ function handleSalesAction(a) {
 
     case 'restore-held':
       store.restoreHeld(a.id);
+      discountTab = store.data.draft.discountSelection?.kind || 'auto';
       closeModal();
       render();
       notify('Đã mở lại đơn tạm.');

@@ -5,7 +5,7 @@
   const { totals } =
     typeof module !== 'undefined' && module.exports ? require('./calculations.js') : scope.Retail;
   function validateBackup(s) {
-    assert(s && [1, 2].includes(s.schema), 'Tệp sao lưu không đúng định dạng RetailFlow.');
+    assert(s && [1, 2, 3].includes(s.schema), 'Tệp sao lưu không đúng định dạng RetailFlow.');
     for (const key of [
       'products',
       'customers',
@@ -148,7 +148,7 @@
         'Nhà cung cấp không hợp lệ.',
       ),
     );
-    if (s.schema === 2) {
+    if (s.schema >= 2) {
       for (const key of ['lots', 'vouchers', 'promotions', 'purchaseReceipts']) {
         assert(Array.isArray(s[key]), `Thiếu ${key}.`);
         assert(new Set(s[key].map((i) => i.id)).size === s[key].length, `Trùng mã ${key}.`);
@@ -167,13 +167,18 @@
       for (const v of [...s.vouchers, ...s.promotions]) {
         assert(
           typeof v.name === 'string' &&
-            ['fixed', 'percent'].includes(v.type) &&
+            ['fixed', 'percent', 'quantity'].includes(v.type) &&
             validDate(v.startsOn) &&
             validDate(v.endsOn) &&
             v.startsOn <= v.endsOn,
           'Ưu đãi không hợp lệ.',
         );
         integer(v.value, 'Mức giảm', 1, v.type === 'percent' ? 100 : 1000000000);
+        if (v.type === 'quantity') integer(v.buyQty, 'Số lượng mỗi nhóm', 2);
+        if (s.schema >= 3 && v.active) {
+          assert(v.type === 'percent' || v.value >= 1000, 'Mức giảm tối thiểu 1.000đ.');
+          assert(!v.maxDiscount || v.maxDiscount >= 1000, 'Trần giảm tối thiểu 1.000đ.');
+        }
         integer(v.minSpend, 'Giá trị tối thiểu');
         integer(v.maxDiscount || 0, 'Giảm tối đa');
       }
@@ -216,6 +221,8 @@
             );
             integer(i.bookQty, 'Tồn sổ kiểm kê');
             integer(i.bookBlocked, 'Cách ly trên sổ', 0, i.bookQty);
+            if (i.salePrice !== undefined) integer(i.salePrice, 'Giá bán chụp lúc kiểm kê');
+            if (i.lossValue !== undefined) integer(i.lossValue, 'Giá trị thiếu kiểm kê');
             if (i.countedQty !== null) integer(i.countedQty, 'Thực đếm');
             integer(i.damagedQty, 'Số hỏng', 0, i.countedQty === null ? 0 : i.countedQty);
             if (['submitted', 'approved'].includes(a.status))
@@ -234,7 +241,7 @@
       );
       s.purchases.forEach((p) =>
         p.items.forEach((i) => {
-          integer(i.receivedQty, 'Đã nhận', 0, i.qty);
+          integer(i.receivedQty, 'Đã nhận');
           integer(i.rejectedQty, 'Không đạt');
         }),
       );
@@ -250,6 +257,14 @@
           integer(i.rejectedQty, 'Không đạt', 0, i.actualQty);
           integer(i.acceptedQty, 'Nhập kho');
           assert(i.acceptedQty === i.actualQty - i.rejectedQty, 'Số đạt không khớp.');
+          if (i.approvedQty !== undefined) {
+            integer(i.approvedQty, 'Số duyệt nhập', 0, i.acceptedQty);
+            integer(i.sentBackQty || 0, 'Phần dư giao lại NCC', 0, i.acceptedQty);
+            assert(
+              i.approvedQty + (i.sentBackQty || 0) === i.acceptedQty,
+              'Số duyệt nhập và phần giao lại không khớp số đạt.',
+            );
+          }
         });
       });
     }

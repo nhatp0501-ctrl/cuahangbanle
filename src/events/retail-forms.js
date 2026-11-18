@@ -1,5 +1,18 @@
 function handleRetailForm(form, v, event) {
   switch (form.id) {
+    case 'audit-invoices-form': {
+      const aid = modalContext.auditId;
+      store.reviewAuditInvoices(aid, modalContext.productId, v.note);
+      auditDetail(aid);
+      notify('Đã lưu đối chiếu. Đếm lại và chốt số thực tế trước khi gửi admin.');
+      break;
+    }
+    case 'audit-recount-form': {
+      const aid = modalContext.auditId;
+      store.recountAuditLot(aid, modalContext.lotId, v.qty, v.damagedQty, v.note);
+      auditDetail(aid);
+      break;
+    }
     case 'quantity-form': {
       const qty = Number(v.qty);
       if (!Number.isSafeInteger(qty) || qty < 1) throw new Error('Chọn số lượng nguyên lớn hơn 0.');
@@ -86,7 +99,7 @@ function handleRetailForm(form, v, event) {
       if (kind === 'purchase') store.reviewPurchase(recordId, decision === 'approve', v.note);
       if (kind === 'receipt') {
         resultId = store.data.purchaseReceipts.find((r) => r.id === recordId).purchaseId;
-        store.reviewPurchaseReceipt(recordId, decision === 'approve', v.note);
+        store.reviewPurchaseReceipt(recordId, decision === 'approve', v.note, v.surplusDecision);
       }
       if (kind === 'audit') store.resolveAudit(recordId, decision, v.note);
       if (kind === 'purchase-short') store.closePurchaseShort(recordId, v.note);

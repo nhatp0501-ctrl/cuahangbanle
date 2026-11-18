@@ -47,7 +47,6 @@ function render() {
     suppliers: () => entitiesView('suppliers'),
     customers: () => entitiesView('customers'),
     staff: () => entitiesView('staff'),
-    returns: returnsView,
     reports: reportsView,
     branches: branchesView,
     settings: settingsView,

@@ -47,7 +47,7 @@ function handleNavigationAction(a) {
                 `<div class="note yellow"><strong>${e(p.name)}</strong> · Chỉ còn ${p.stock} sản phẩm.</div>`,
             )
             .join('') || empty('Kho hàng đủ hàng')
-        }${store.can('purchases') ? action('navigate-modal', 'Xem phiếu nhập', 'truck', '', 'data-page="purchases"') : ''}${store.can('returns') ? action('navigate-modal', 'Xem yêu cầu hoàn trả', 'return', '', 'data-page="returns"') : ''}</div>`,
+        }${store.can('purchases') ? action('navigate-modal', 'Xem phiếu nhập', 'truck', '', 'data-page="purchases"') : ''}</div>`,
       );
       break;
 

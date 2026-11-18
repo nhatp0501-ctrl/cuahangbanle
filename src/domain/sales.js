@@ -25,7 +25,7 @@
       return this.commit('Cập nhật giỏ hàng', 'Đơn hàng hiện tại', () => {
         const value = clone(draft);
         value.checkoutKey ||= id('PAY');
-        value.discountSelection ||= { kind: 'none', id: '' };
+        value.discountSelection ||= { kind: 'auto', id: '' };
         value.discount = 0;
         this.data.draft = value;
       });
@@ -35,7 +35,7 @@
         items: [],
         customerId: '',
         discount: 0,
-        discountSelection: { kind: 'none', id: '' },
+        discountSelection: { kind: 'auto', id: '' },
         checkoutKey: id('PAY'),
         note: '',
         demographic: 'Không ghi nhận',
@@ -70,7 +70,7 @@
     },
     checkout(options) {
       this.require('pos');
-      const { payment, paymentRef = '', confirmed = false, checkoutKey } = options;
+      const { payment, confirmed = false, checkoutKey } = options;
       assert(METHODS[payment], 'Chọn đúng một phương thức thanh toán.');
       assert(
         !options.payments && !options.partialPayment && !options.installment,
@@ -100,12 +100,17 @@
         );
       } else {
         assert(confirmed, 'Cần xác nhận đã nhận đủ toàn bộ tiền.');
-        assert(paymentRef.trim(), 'Nhập mã tham chiếu giao dịch.');
         received = quote.total;
       }
       const customer = this.data.customers.find((c) => c.id === d.customerId);
       assert(!d.customerId || customer?.active, 'Khách hàng không hoạt động.');
       return this.commit('Thanh toán đủ một lần', METHODS[payment], () => {
+        let reference;
+        let attempts = 0;
+        do {
+          assert(attempts++ < 100000, 'Không tạo được mã giao dịch mới.');
+          reference = 'HD' + String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+        } while (this.data.orders.some((o) => o.paymentRef === reference || o.id === reference));
         const { items, discountRule, ...amounts } = quote;
         const order = {
           id: id('HD'),
@@ -119,7 +124,7 @@
           paymentCount: 1,
           received,
           change: received - quote.total,
-          paymentRef: paymentRef.trim(),
+          paymentRef: reference,
           checkoutKey: d.checkoutKey,
           status: 'completed',
           staffId: this.user.id,

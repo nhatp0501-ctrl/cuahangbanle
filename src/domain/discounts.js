@@ -18,6 +18,21 @@
   const methods = {
     quoteDraft(draft = this.data.draft) {
       const selection = draft.discountSelection || { kind: 'none', id: '' };
+      if (selection.kind === 'auto') {
+        let best = this.quoteDraft({ ...draft, discountSelection: { kind: 'none', id: '' } });
+        for (const p of this.data.promotions) {
+          try {
+            const q = this.quoteDraft({
+              ...draft,
+              discountSelection: { kind: 'promotion', id: p.id },
+            });
+            if (q.discount > best.discount) best = q;
+          } catch {
+            /* Chưa đủ số lượng, hết hiệu lực hoặc khác lô: chưa áp dụng. */
+          }
+        }
+        return { ...best, discountSelection: { kind: 'auto', id: best.discountRule?.id || '' } };
+      }
       assert(['none', 'voucher', 'promotion'].includes(selection.kind), 'Chọn một loại giảm giá.');
       const items = draft.items.map((i) => {
         const p = this.data.products.find((p) => p.id === i.id);
@@ -37,6 +52,7 @@
         label = 'Không giảm giá',
         rule = null;
       const eligible = items.map((i) => i.qty * i.price);
+      let quantityWeights = null;
       if (selection.kind !== 'none') {
         rule = (selection.kind === 'voucher' ? this.data.vouchers : this.data.promotions).find(
           (r) => r.id === selection.id,
@@ -72,15 +88,34 @@
         const base = eligible.reduce((a, n) => a + n, 0);
         assert(base > 0, 'Giỏ hàng không có sản phẩm/lô thuộc chương trình.');
         assert(base >= rule.minSpend, 'Giá trị hàng thuộc phạm vi ưu đãi chưa đạt mức tối thiểu.');
+        if (rule.type === 'quantity')
+          quantityWeights = items.map((item, n) => {
+            const groups = item.price > 0 ? Math.floor(eligible[n] / item.price / rule.buyQty) : 0;
+            return groups * Math.min(rule.buyQty * item.price, rule.value);
+          });
+        const quantityDiscount = quantityWeights?.reduce((sum, amount) => sum + amount, 0) || 0;
+        if (rule.type === 'quantity')
+          assert(
+            quantityDiscount > 0,
+            `Cần mua đủ ${rule.buyQty} sản phẩm cùng mã thuộc chương trình.`,
+          );
         discount = Math.min(
           base,
-          rule.type === 'percent' ? Math.floor((base * rule.value) / 100) : rule.value,
+          rule.type === 'quantity'
+            ? quantityDiscount
+            : rule.type === 'percent'
+              ? Math.floor((base * rule.value) / 100)
+              : rule.value,
           rule.maxDiscount || Number.MAX_SAFE_INTEGER,
+        );
+        assert(
+          discount >= 1000,
+          'Số tiền giảm thực tế phải từ 1.000đ. Mua thêm hàng đủ điều kiện.',
         );
         label = selection.kind === 'voucher' ? `Voucher ${rule.code}` : rule.name;
       }
       const t = totals(items, discount, this.data.settings.taxRate);
-      const discounts = allocate(discount, eligible),
+      const discounts = allocate(discount, quantityWeights || eligible),
         nets = items.map((i, n) => i.qty * i.price - discounts[n]),
         taxes = allocate(t.tax, nets);
       items.forEach((i, n) => {
@@ -102,10 +137,22 @@
       const v = clone(values),
         list = kind === 'voucher' ? this.data.vouchers : this.data.promotions;
       assert(v.name?.trim(), 'Nhập tên.');
-      assert(['fixed', 'percent'].includes(v.type), 'Chọn giảm số tiền hoặc phần trăm.');
-      v.value = integer(v.value, 'Mức giảm', 1, v.type === 'percent' ? 100 : 1000000000);
+      assert(
+        (kind === 'promotion' ? ['fixed', 'percent', 'quantity'] : ['fixed', 'percent']).includes(
+          v.type,
+        ),
+        'Chọn cách giảm hợp lệ.',
+      );
+      v.value = integer(
+        v.value,
+        'Mức giảm',
+        v.type === 'percent' ? 1 : 1000,
+        v.type === 'percent' ? 100 : 1000000000,
+      );
+      if (v.type === 'quantity') v.buyQty = integer(v.buyQty, 'Số lượng mỗi nhóm', 2, 100000);
       v.minSpend = integer(v.minSpend, 'Giá trị tối thiểu');
       v.maxDiscount = integer(v.maxDiscount || 0, 'Giảm tối đa');
+      assert(!v.maxDiscount || v.maxDiscount >= 1000, 'Trần giảm giá phải từ 1.000đ hoặc bằng 0.');
       assert(
         validDate(v.startsOn) && validDate(v.endsOn) && v.startsOn <= v.endsOn,
         'Khoảng thời gian không hợp lệ.',

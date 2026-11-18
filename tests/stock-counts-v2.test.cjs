@@ -12,7 +12,10 @@ test('counting locks sale and receiving for the scope and requires independent s
   const { s, p } = fixture();
   const a = s.startAudit([p.id], 'Đếm kệ A');
   assert.equal(a.status, 'counting');
-  assert.throws(() => { draft(s, p, 1); s.quoteDraft(); }, /khóa kiểm kê/);
+  assert.throws(() => {
+    draft(s, p, 1);
+    s.quoteDraft();
+  }, /khóa kiểm kê/);
   assert.throws(() => s.addLot(p.id, { qty: 2, code: 'X', expiryDate: addDays(20) }), /khóa/);
   assert.throws(() => s.saveAuditCount(a.id, lines(a), true), /Lưu kết quả/);
   s.saveAuditCount(a.id, lines(a), false);
@@ -26,6 +29,8 @@ test('warehouse submits discrepancies; stock changes only on admin approval with
     counted = lines(a, -2);
   counted[0].damagedQty = 1;
   s.saveAuditCount(a.id, counted, false);
+  s.reviewAuditInvoices(a.id, p.id, 'Đã xem hóa đơn và phiếu nhập');
+  s.recountAuditLot(a.id, a.items[0].lotId, counted[0].countedQty, 1, counted[0].reason);
   s.saveAuditCount(a.id, counted, true);
   assert.equal(s.data.products.find((x) => x.id === p.id).stock, before);
   assert.throws(() => s.resolveAudit(a.id, 'approve', 'Ghi mất2'), /không có quyền/);
@@ -33,7 +38,9 @@ test('warehouse submits discrepancies; stock changes only on admin approval with
   const done = s.resolveAudit(a.id, 'approve', 'Xác nhận vỡ 2, cách ly 1 móp');
   assert.equal(done.status, 'approved');
   assert.equal(s.data.products.find((x) => x.id === p.id).stock, before - 2);
-  assert.equal(done.items[0].lossValue, 2 * p.cost);
+  assert.equal(done.items[0].lossValue, 2 * p.price);
+  assert.equal(done.items[0].costLoss, 2 * p.cost);
+  assert.equal(s.monthEndSummary().loss, 2 * p.price);
   assert.equal(s.data.lots.find((l) => l.id === done.items[0].lotId).blockedQty, 1);
   assert.equal(s.inventoryLock(p.id), undefined);
   assert.throws(() => s.resolveAudit(a.id, 'approve', 'Lặp'), /trạng thái/);
@@ -45,8 +52,10 @@ test('unexplained changes cannot be submitted; recount resets blind counts; reje
     counted = lines(a, -1);
   counted[0].reason = '';
   s.saveAuditCount(a.id, counted, false);
-  assert.throws(() => s.saveAuditCount(a.id, counted, true), /Giải trình/);
+  assert.throws(() => s.saveAuditCount(a.id, counted, true), /đối chiếu/);
   counted[0].reason = 'Thiếu hàng';
+  s.reviewAuditInvoices(a.id, p.id, 'Đối chiếu đủ');
+  s.recountAuditLot(a.id, a.items[0].lotId, counted[0].countedQty, 0, 'Thiếu hàng');
   s.saveAuditCount(a.id, counted, true);
   s.resolveAudit(a.id, 'recount', 'Yêu cầu đếm độc lập lần hai');
   a = s.data.audits.find((x) => x.id === a.id);

@@ -70,12 +70,11 @@ test('partial delivery tracks actual/rejected/accepted and only approved accepte
   assert.equal(po.items[0].receivedQty, 10);
   assert.equal(s.data.products.find((x) => x.id === p.id).stock, before + 10);
 });
-test('overdelivery, expired accepted goods and a receipt missing reasons are refused', () => {
+test('expired accepted goods and a receipt missing reasons are refused', () => {
   const { s, p } = fixture(),
     pn = request(s, p);
   s.login('admin', '123456');
   s.reviewPurchase(pn.id, true, 'OK');
-  assert.throws(() => report(s, pn, p, 11), /số nguyên/);
   s.login('kho', '123456');
   assert.throws(
     () =>
@@ -96,6 +95,28 @@ test('overdelivery, expired accepted goods and a receipt missing reasons are ref
     /Giải trình/,
   );
 });
+for (const choice of ['accept', 'send_back'])
+  test(`overdelivery is recorded and admin must explicitly ${choice} surplus`, () => {
+    const { s, p } = fixture(),
+      before = p.stock,
+      pn = request(s, p);
+    s.login('admin', '123456');
+    s.reviewPurchase(pn.id, true, 'Đặt 10');
+    const r = report(s, pn, p, 13, 1);
+    assert.equal(r.items[0].actualQty, 13);
+    assert.equal(r.items[0].surplusQty, 2);
+    assert.equal(p.stock, before);
+    s.login('admin', '123456');
+    assert.throws(() => s.reviewPurchaseReceipt(r.id, true, 'Đối chiếu'), /Giao dư/);
+    s.reviewPurchaseReceipt(r.id, true, 'NCC xác nhận phần dư', choice);
+    const po = s.data.purchases.find((x) => x.id === pn.id),
+      accepted = choice === 'accept' ? 12 : 10;
+    assert.equal(po.items[0].receivedQty, accepted);
+    assert.equal(po.receivedValue, accepted * p.cost);
+    assert.equal(po.status, 'received');
+    assert.equal(s.data.products.find((x) => x.id === p.id).stock, before + accepted);
+    assert.equal(require('../store').validateBackup(s.data).schema, 3);
+  });
 test('receipt rejection does not add inventory and permits a corrected receipt', () => {
   const { s, p } = fixture(),
     before = p.stock,
@@ -125,4 +146,34 @@ test('only admin can close a supplier shortage, with a recorded reason and no ph
   s.closePurchaseShort(pn.id, 'NCC xác nhận không giao 4 còn thiếu, hủy phần còn lại.');
   assert.equal(s.data.purchases.find((x) => x.id === pn.id).status, 'closed_short');
   assert.equal(s.data.products.find((x) => x.id === p.id).stock, before + 6);
+});
+test('multi-line receiving is atomic even when a later lot fails approval', () => {
+  const { s, p, storage } = fixture();
+  const other = s.data.products.find(
+    (x) => x.active && x.id !== p.id && x.supplierId === p.supplierId && x.tracksExpiry,
+  );
+  const pn = s.createPurchase(
+    p.supplierId,
+    [p, other].map((x) => ({ id: x.id, qty: 5, price: x.cost })),
+    'Nhập cùng NCC',
+  );
+  s.reviewPurchase(pn.id, true, 'Đủ điều kiện');
+  const r = s.reportPurchaseReceipt(
+    pn.id,
+    [p, other].map((x) => ({
+      id: x.id,
+      actualQty: 5,
+      rejectedQty: 0,
+      lotCode: 'TX-' + x.id,
+      expiryDate: addDays(20),
+    })),
+    { deliveryRef: 'ATOMIC' },
+  );
+  r.items[1].expiryDate = addDays(-1); // HSD không còn hợp lệ tại thời điểm duyệt.
+  const { KEY, clone } = require('./fixtures.cjs');
+  const before = clone(s.data),
+    disk = storage.getItem(KEY);
+  assert.throws(() => s.reviewPurchaseReceipt(r.id, true, 'Đối chiếu'), /hết hạn/);
+  assert.deepEqual(s.data, before);
+  assert.equal(storage.getItem(KEY), disk);
 });

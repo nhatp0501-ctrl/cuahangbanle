@@ -25,6 +25,7 @@
           bookQty: l.qty,
           bookBlocked: l.blockedQty,
           cost: p.cost,
+          salePrice: p.price,
           countedQty: null,
           damagedQty: 0,
           reason: '',
@@ -71,9 +72,21 @@
               row.reason = input.reason || '';
               return;
             }
-            row.countedQty = integer(input.countedQty, 'Số thực đếm');
+            const counted = integer(input.countedQty, 'Số thực đếm');
+            if (counted !== row.countedQty || Number(input.damagedQty || 0) !== row.damagedQty)
+              row.recountConfirmed = false;
+            row.countedQty = counted;
             row.damagedQty = integer(input.damagedQty || 0, 'Số hỏng/cách ly', 0, row.countedQty);
             row.reason = input.reason?.trim() || '';
+            if (row.countedQty !== row.bookQty || row.damagedQty !== row.bookBlocked) {
+              row.discrepancyStatus = row.recountConfirmed ? 'awaiting_admin' : 'needs_review';
+              row.discrepancyOpenedAt ||= now();
+              if (submit)
+                assert(
+                  row.invoiceReview && row.recountConfirmed,
+                  'Có chênh lệch: đối chiếu hóa đơn và chốt đếm lại từng lô trước khi gửi admin.',
+                );
+            } else row.discrepancyStatus = 'matched';
             if (submit && (row.countedQty !== row.bookQty || row.damagedQty !== row.bookBlocked))
               assert(row.reason, 'Giải trình từng lô có chênh lệch hoặc hàng hỏng.');
           });
@@ -117,11 +130,18 @@
             const delta = i.countedQty - i.bookQty;
             if (delta || i.damagedQty !== i.bookBlocked)
               assert(i.reason?.trim(), 'Thiếu giải trình chênh lệch.');
+            if (delta || i.damagedQty !== i.bookBlocked)
+              assert(
+                i.invoiceReview && i.recountConfirmed,
+                'Phải đối chiếu hóa đơn và đếm lại trước khi duyệt chênh lệch.',
+              );
             lot.qty = i.countedQty;
             lot.blockedQty = i.damagedQty;
             this.stockMovement(i.productId, delta, 'Điều chỉnh kiểm kê đã duyệt', a.id, lot.id);
             i.delta = delta;
-            i.lossValue = Math.max(0, -delta) * i.cost;
+            i.costLoss = Math.max(0, -delta) * i.cost;
+            i.lossValue = Math.max(0, -delta) * (i.salePrice ?? i.cost);
+            i.discrepancyStatus = 'resolved';
           }
           a.status = 'approved';
           a.resolvedAt = now();
@@ -134,6 +154,8 @@
             i.countedQty = null;
             i.damagedQty = 0;
             i.reason = '';
+            i.recountConfirmed = false;
+            delete i.invoiceReview;
           });
         } else {
           a.status = decision === 'cancel' ? 'cancelled' : 'rejected';

@@ -97,31 +97,6 @@ function entitiesView(type) {
             ],
           ];
   let headers, rows;
-  if (type === 'products')
-    fields +=
-      field(
-        'Đường dẫn ảnh bao bì local',
-        'image',
-        v.image || 'assets/product-placeholder.svg',
-        'text',
-        'maxlength="200"',
-        true,
-      ) +
-      selectField(
-        'Quản lý HSD theo lô',
-        'tracksExpiry',
-        [
-          ['true', 'Có — hàng tiêu dùng'],
-          ['false', 'Không — giấy/đồ dùng không HSD'],
-        ],
-        String(v.tracksExpiry !== false),
-        '',
-        true,
-      ) +
-      (!recordId
-        ? field('Mã lô tồn đầu kỳ', 'lotCode', '', 'text', '', false) +
-          field('HSD lô tồn đầu kỳ', 'expiryDate', '', 'date')
-        : '');
   if (type === 'suppliers') {
     headers = [
       'Mã NCC',
@@ -134,7 +109,7 @@ function entitiesView(type) {
     ];
     rows = p.items.map(
       (x) =>
-        `<tr><td>${e(x.id)}</td><td class="name">${e(x.name)}</td><td>${e(x.category)}</td><td>${e(x.phone)}</td><td>${e(x.areas)}</td><td>${x.active ? badge('Đang hợp tác') : badge('Ngừng hợp tác', 'gray')}</td><td>${ibEntity(type, x.id)}${ib('supplier-history', 'receipt', 'Lịch sử nhập hàng', `data-id="${e(x.id)}"`)}</td></tr>`,
+        `<tr><td>${e(x.id)}</td><td class="name">${e(x.name)}</td><td>${e(x.category)}</td><td>${e(x.phone)}</td><td>${e(x.areas)}</td><td>${x.active ? badge('Đang hợp tác') : badge('Ngừng hợp tác', 'gray')}</td><td>${ibEntity(type, x.id)}${action('supplier-history', 'Danh mục & lịch sử', 'receipt', 'small', `data-id="${e(x.id)}"`)}</td></tr>`,
     );
   }
   if (type === 'customers') {
@@ -162,7 +137,7 @@ function entitiesView(type) {
       action('entity-new', config[3], 'plus', 'primary', `data-type="${type}"`),
     ) +
     stats(metrics) +
-    `<section class="panel"><div class="panel-head"><h2>Danh sách ${type === 'staff' ? 'nhân viên' : type === 'customers' ? 'khách hàng' : 'nhà cung cấp'}</h2>${type === 'staff' ? badge('Phân quyền theo vai trò', 'gray') : ''}</div><div class="table-tools">${filterInput(type, 'Tìm kiếm theo tên, mã hoặc thông tin liên hệ…')}</div>${table(headers, rows)}${p.foot}</section>${type === 'staff' ? '<div class="note mt16">Quản trị viên: toàn bộ chức năng · Thu ngân: POS, đơn hàng, khách hàng, tạo yêu cầu trả · Nhân viên kho: xem sản phẩm, kiểm kê, nhập hàng, nhà cung cấp. Phê duyệt hoàn tiền cần quyền quản trị.</div>' : ''}`
+    `<section class="panel"><div class="panel-head"><h2>Danh sách ${type === 'staff' ? 'nhân viên' : type === 'customers' ? 'khách hàng' : 'nhà cung cấp'}</h2>${type === 'staff' ? badge('Phân quyền theo vai trò', 'gray') : ''}</div><div class="table-tools">${filterInput(type, 'Tìm kiếm theo tên, mã hoặc thông tin liên hệ…')}</div>${table(headers, rows)}${p.foot}</section>${type === 'staff' ? '<div class="note mt16">Quản trị viên: toàn bộ chức năng · Thu ngân: POS, đơn hàng, khách hàng, Nhân viên kho: xem sản phẩm, kiểm kê, nhập hàng, nhà cung cấp. Admin duyệt nhập kho và điều chỉnh kiểm kê.</div>' : ''}`
   );
 }
 
@@ -211,9 +186,36 @@ function entityModal(type, recordId = '') {
         ? field('Tồn đầu kỳ', 'stock', 0, 'number', 'required min="0" step="1"')
         : '<div class="note">Điều chỉnh số lượng hàng ở chức năng Kho & kiểm kê.</div>') +
       `<datalist id="category-options">${[...new Set(store.data.products.map((p) => p.category))].map((c) => `<option value="${e(c)}">`).join('')}</datalist>`;
+  if (type === 'products')
+    fields +=
+      field(
+        'Đường dẫn ảnh bao bì local',
+        'image',
+        v.image || 'assets/product-placeholder.svg',
+        'text',
+        'maxlength="200"',
+        true,
+      ) +
+      selectField(
+        'Quản lý HSD theo lô',
+        'tracksExpiry',
+        [
+          ['true', 'Có — hàng tiêu dùng'],
+          ['false', 'Không — giấy/đồ dùng không HSD'],
+        ],
+        String(v.tracksExpiry !== false),
+        '',
+        true,
+      ) +
+      (!recordId
+        ? field('Mã lô tồn đầu kỳ', 'lotCode', '', 'text', '', false) +
+          field('HSD lô tồn đầu kỳ', 'expiryDate', '', 'date')
+        : '');
   if (type === 'suppliers')
     fields +=
       field('Số điện thoại', 'phone', v.phone || '', 'tel', 'required maxlength="30"') +
+      field('Người / bộ phận liên hệ', 'contact', v.contact || '', 'text', 'maxlength="150"') +
+      field('Địa chỉ', 'address', v.address || '', 'text', 'maxlength="250"', true) +
       field(
         'Nhóm hàng cung cấp',
         'category',
@@ -280,15 +282,16 @@ function customerHistory(customerId) {
 }
 
 function supplierHistory(supplierId) {
+  modalContext = { type: 'supplier-detail', supplierId };
   const s = store.data.suppliers.find((s) => s.id === supplierId);
   const orders = store.data.purchases.filter((p) => p.supplierId === supplierId);
   showModal(
-    `Lịch sử nhập · ${e(s.name)}`,
-    `<div class="modal-content">${table(
+    `Danh mục & lịch sử · ${e(s.name)}`,
+    `<div class="modal-content"><p class="note">${e(s.category)} · ${e(s.areas)} · ${e(s.phone)}<br>${e(s.contact || '')} · ${e(s.address || 'Chưa cập nhật địa chỉ')}</p><h3 class="mt16">Danh mục riêng của nhà cung cấp</h3><input id="supplier-product-search" placeholder="Tìm trong danh mục NCC…" aria-label="Tìm sản phẩm nhà cung cấp"><div id="supplier-product-list">${supplierProductsHTML(s.id)}</div><h3 class="mt16">Lịch sử nhập</h3>${table(
       ['Phiếu nhập', 'Ngày', 'Giá trị', 'Trạng thái'],
       orders.map(
         (o) =>
-          `<tr><td>${action('purchase-detail', e(o.id), '', 'ghost small', `data-id="${e(o.id)}"`)}</td><td>${date(o.time)}</td><td>${money(o.total)}</td><td>${status(o.status)}</td></tr>`,
+          `<tr><td>${action('purchase-detail', e(o.id), '', 'ghost small', `data-id="${e(o.id)}"`)}</td><td>${date(o.time)}</td><td>${money(o.total)}</td><td>${workflowStatus(o.status)}</td></tr>`,
       ),
     )}</div>`,
     true,

@@ -10,7 +10,6 @@ document.addEventListener('click', (event) => {
       handleSalesAction,
       handleCatalogAction,
       handleInventoryAction,
-      handleReturnsAction,
       handleSettingsAction,
       handleOrdersAction,
     ])

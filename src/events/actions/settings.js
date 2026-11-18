@@ -1,5 +1,9 @@
 function handleSettingsAction(a) {
   switch (a.action) {
+    case 'export-month-report':
+      store.require('reports');
+      exportMonthReport();
+      break;
     case 'discount-manage-tab':
       discountManagementTab = a.tab;
       pagination = {};

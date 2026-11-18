@@ -12,15 +12,16 @@ function reportsView() {
     heading(
       'THỐNG KÊ / DOANH THU',
       'Báo cáo kinh doanh',
-      'Tổng hợp doanh thu, hoàn tiền và các phương thức thanh toán.',
+      'Tổng hợp thu bán hàng, điều chỉnh lịch sử và đối soát hao hụt cuối tháng.',
       action('export-report', 'Xuất báo cáo CSV', 'download', 'primary'),
     ) +
     `<div class="row mb16"><span class="muted">Kỳ báo cáo</span><select id="report-period" style="width:140px">${[1, 7, 30, 90].map((n) => `<option value="${n}" ${n === reportDays ? 'selected' : ''}>${n === 1 ? 'Hôm nay' : n + ' ngày gần nhất'}</option>`).join('')}</select><span class="sub">Doanh thu từ hóa đơn đã thanh toán · Hoàn tiền theo ngày xử lý</span></div>` +
+    monthEndReportHTML() +
     stats([
       ['Doanh thu gộp', money(p.gross), `${reportDays} ngày gần nhất`, 'receipt'],
-      ['Hoàn tiền hợp lệ', money(p.refund), 'Phiếu đã duyệt trong kỳ', 'return'],
+      ['Điều chỉnh lịch sử', money(p.refund), 'Dữ liệu trước khi bỏ trả hàng', 'info'],
       ['Doanh thu thuần', money(p.gross - p.refund), 'Doanh thu gộp trừ tiền hoàn', 'chart'],
-      ['Số đơn thanh toán', number(p.orders.length), 'Bao gồm đơn đã trả hàng', 'cart'],
+      ['Số đơn thanh toán', number(p.orders.length), 'Hóa đơn đã thanh toán', 'cart'],
     ]) +
     `<div class="dashboard-grid"><section class="panel"><div class="panel-head"><div><h2>Biểu đồ doanh thu</h2><p class="sub">Doanh thu gộp theo ngày · Đơn vị nghìn đồng</p></div></div><div class="panel-body">${lineChart(reportDays === 1 ? 7 : reportDays)}</div></section><section class="panel"><div class="panel-head"><h2>Danh mục bán chạy</h2></div><div class="panel-body">${
       categories

@@ -25,7 +25,6 @@ document.addEventListener('submit', (event) => {
         const o = store.checkout({
           payment: v.payment,
           received: Number(v.received || 0),
-          paymentRef: v.paymentRef || '',
           confirmed: v.confirmed === 'on',
           checkoutKey: v.checkoutKey,
         });
@@ -54,27 +53,6 @@ document.addEventListener('submit', (event) => {
         render();
         notify('Đã lưu phiếu nhập hàng.');
         break;
-      case 'return-form': {
-        if (
-          !modalContext.orderId ||
-          v.orderId.trim().toLowerCase() !== modalContext.orderId.toLowerCase()
-        )
-          throw new Error('Tra cứu hóa đơn trước khi gửi yêu cầu.');
-        if (!v.reason?.trim()) throw new Error('Vui lòng nhập lý do trả hàng.');
-        const selections = $$('[data-return-id]', $('#modal'))
-          .map((input) => ({ id: input.dataset.returnId, qty: Number(input.value) }))
-          .filter((i) => i.qty > 0);
-        const r = store.createReturn(
-          modalContext.orderId,
-          selections,
-          v.reason,
-          v.restock === 'on',
-        );
-        render();
-        returnDetail(r.id);
-        notify('Đã tạo yêu cầu, chờ quản trị viên phê duyệt.');
-        break;
-      }
       case 'settings-form':
         store.saveSettings({ ...v, taxRate: Number(v.taxRate) });
         render();

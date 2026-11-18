@@ -121,57 +121,6 @@
         this.stockMovement(productId, -allocation.qty, 'Bán hàng FEFO', reference, l.id);
       }
     },
-    restoreReturnStock(original, qty, previouslyReturned, reference) {
-      this.assertUnlocked(original.id);
-      let skip = previouslyReturned,
-        remaining = qty;
-      for (const allocation of original.lotAllocations || []) {
-        const ignored = Math.min(skip, allocation.qty);
-        skip -= ignored;
-        const take = Math.min(remaining, allocation.qty - ignored);
-        if (!take) continue;
-        let lot = this.data.lots.find((l) => l.id === allocation.lotId);
-        if (!lot) {
-          lot = {
-            id: id('LO'),
-            productId: original.id,
-            code: allocation.lotCode,
-            expiryDate: allocation.expiryDate || null,
-            qty: 0,
-            blockedQty: 0,
-            receivedAt: now(),
-            sourceId: reference,
-          };
-          this.data.lots.push(lot);
-        }
-        lot.qty += take;
-        if (!['good', 'near'].includes(this.lotStatus(lot))) lot.blockedQty += take;
-        this.stockMovement(original.id, take, 'Nhận lại lô hàng trả', reference, lot.id);
-        remaining -= take;
-        if (!remaining) break;
-      }
-      if (remaining) {
-        const lot = {
-          id: id('LO'),
-          productId: original.id,
-          code: 'TRA-CHUA-XAC-MINH',
-          expiryDate: null,
-          qty: remaining,
-          blockedQty: remaining,
-          receivedAt: now(),
-          sourceId: reference,
-          needsExpiry: true,
-        };
-        this.data.lots.push(lot);
-        this.stockMovement(
-          original.id,
-          remaining,
-          'Hàng trả cách ly chờ xác minh lô',
-          reference,
-          lot.id,
-        );
-      }
-    },
     setLotExpiry(lotId, expiryDate, note) {
       this.admin();
       const lot = this.data.lots.find((l) => l.id === lotId);

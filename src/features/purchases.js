@@ -165,7 +165,7 @@ function purchaseDetail(purchaseId) {
       ['Sản phẩm', 'Yêu cầu', 'Đạt đã nhập', 'Còn thiếu', 'Không đạt', 'Giá nhập'],
       p.items.map(
         (i) =>
-          `<tr><td class="name">${e(i.name)}</td><td>${i.qty}</td><td class="positive">${i.receivedQty}</td><td class="${i.qty - i.receivedQty ? 'negative' : ''}">${i.qty - i.receivedQty}</td><td>${i.rejectedQty}</td><td>${money(i.price)}</td></tr>`,
+          `<tr><td class="name">${e(i.name)}</td><td>${i.qty}</td><td class="positive">${i.receivedQty}</td><td class="${i.qty - i.receivedQty ? 'negative' : ''}">${Math.max(0, i.qty - i.receivedQty)} thiếu / ${Math.max(0, i.receivedQty - i.qty)} dư</td><td>${i.rejectedQty}</td><td>${money(i.price)}</td></tr>`,
       ),
     )}<div class="mini-cards"><div class="mini-card">Giá trị đặt dự kiến<strong>${money(p.total)}</strong></div><div class="mini-card">Giá trị hàng đạt đã nhập<strong>${money(p.items.reduce((a, i) => a + i.receivedQty * i.price, 0))}</strong></div></div>${p.note ? `<p class="sub">Lý do đề nghị: ${e(p.note)}</p>` : ''}${p.reviewNote ? `<div class="note">Admin ${e(p.reviewer)}: ${e(p.reviewNote)}</div>` : ''}${p.closeNote ? `<div class="note yellow">Kết luận: ${e(p.closeNote)}</div>` : ''}<h3>Biên bản từng lần giao hàng</h3>${reports.map((r) => receiptReportHTML(r)).join('') || '<p class="sub">Chưa ghi nhận giao hàng từ NCC. Kho chỉ khai thực nhận sau khi yêu cầu được duyệt.</p>'}<div class="note">Hàng thiếu được giữ để NCC giao bù. Admin có thể chốt số còn thiếu với lý do và xác nhận của NCC. Không sửa số thực nhận để giả lập nhận đủ.</div></div><div class="modal-footer wrap">${actions.join('') || action('close-modal', 'Đóng')}</div>`,
     true,

@@ -20,7 +20,7 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
   }
   await submit('login-form');
   await check(
-    `store.data.schema===2 && !store.loadError && store.data.products.filter(p=>p.active).length>=180`,
+    `store.data.schema===3 && !store.loadError && store.data.products.filter(p=>p.active).length>=180`,
     'v2 loads a realistic large catalogue without losing data',
   );
   await evaluate(`for(const p of pages)navigate(p[0]);navigate('pos')`);
@@ -105,7 +105,10 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
     await evaluate(`addCart(${JSON.stringify(pid)},1)`);
     await click('[data-action="checkout"]');
     await click(`[data-method="${method}"]`);
-    await fill('[name="paymentRef"]', 'FULL-' + method);
+    await check(
+      `!document.querySelector('[name="paymentRef"]')`,
+      'reference is generated without typing',
+    );
     await click('[name="confirmed"]');
     await submit('checkout-form');
     await check(
@@ -115,30 +118,11 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
     await click('[data-action="close-modal"]');
   }
   await login('nhanvien');
-  await evaluate(`navigate('returns');returnModal(${JSON.stringify(orderId)})`);
-  await fill('[data-return-id]', 1);
-  await fill('[name="reason"]', 'Khách đổi nhu cầu');
-  await submit('return-form');
   await check(
-    `store.data.returns[0].status==='pending' && !document.querySelector('[data-action="return-approve"]')`,
-    'cashier only sends a return request',
-  );
-  const rid = await evaluate('store.data.returns[0].id');
-  await click('[data-action="close-modal"]');
-  await evaluate(`navigate('orders')`);
-  await check(
-    `!document.querySelector('#content').textContent.includes('Một phần') && !document.querySelector('#content').textContent.includes('Có hoàn trả')`,
-    'orders page does not expose partial or full return state',
+    `!pages.some(p=>p[0]==='returns') && !store.can('returns') && typeof store.createReturn==='undefined' && !document.querySelector('[data-page="returns"]')`,
+    'returns removed from menu, roles and domain',
   );
   await login('admin');
-  await evaluate(`navigate('returns');returnDetail(${JSON.stringify(rid)})`);
-  await click('[data-action="return-approve"]');
-  await click('[data-action="confirm"]');
-  await check(
-    `store.data.orders.find(o=>o.id===${JSON.stringify(orderId)}).status==='completed' && store.data.returns.find(r=>r.id===${JSON.stringify(rid)}).status==='approved'`,
-    'return approval is separate from the paid order status',
-  );
-  await click('[data-action="close-modal"]');
   await evaluate(`navigate('promotions')`);
   await click('[data-action="discount-manage-tab"][data-tab="near"]');
   await click('[data-action="promotion-lot"]');
@@ -149,6 +133,21 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
     'near-expiry lots can be selected into a promotion',
   );
 
+  await evaluate(
+    `navigate('pos');changeDraft(d=>{d.items=[];d.discountSelection={kind:'auto',id:''}});const p=store.data.products.find(p=>p.id===store.data.promotions.find(r=>r.id==='KM-MUA2').productIds[0]);filters.pos=p.id;render();addCart(p.id,2)`,
+  );
+  await check(
+    `store.quoteDraft().discount>=5000 && document.querySelector('.promotion-hint').textContent.includes('Mua 2')`,
+    'quantity offer is hinted under the product and applied automatically',
+  );
+  await screenshot('v3-auto-promotions.png');
+  await evaluate(`navigate('suppliers')`);
+  await click('[data-action="supplier-history"]');
+  await check(
+    `!!document.querySelector('#supplier-product-search') && document.querySelector('#modal').textContent.includes('Danh mục riêng')`,
+    'each supplier detail includes its own searchable catalogue',
+  );
+  await click('[data-action="close-modal"]');
   await login('kho');
   await evaluate(`navigate('purchases')`);
   await click('[data-action="purchase-new"]');
@@ -199,17 +198,19 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
   await evaluate(`navigate('purchases');purchaseDetail(${JSON.stringify(purchaseId)})`);
   await click('[data-action="purchase-report"]');
   await fill('[name="deliveryRef"]', 'NCC-GIAO-02');
-  await fill('[data-receipt-field="actualQty"]', 5);
+  await fill('[data-receipt-field="actualQty"]', 7);
   await fill('[data-receipt-field="lotCode"]', 'NCC-LOT-02');
+  await fill('[data-receipt-field="reason"]', 'NCC giao dư 2, chờ admin đối chiếu');
   await fill('[data-receipt-field="expiryDate"]', await evaluate('Retail.addDays(100)'));
   await submit('receipt-report-form');
   await login('admin');
   await evaluate(`navigate('purchases');purchaseDetail(${JSON.stringify(purchaseId)})`);
   await click('[data-action="receipt-review"][data-decision="approve"]');
-  await decision('Nhận bổ sung đủ 5, đóng đơn nhận đủ');
+  await change('[name="surplusDecision"]', 'send_back');
+  await decision('Nhận bổ sung đủ 5, giao lại 2 dư cho NCC');
   await check(
     `store.data.purchases[0].status==='received' && store.data.purchases[0].items[0].receivedQty===10`,
-    'a later delivery reconciles cumulatively to the requested quantity',
+    'overdelivery is recorded and admin sends surplus back while receiving only the remaining order',
   );
 
   await login('kho');
@@ -231,7 +232,24 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
     `store.data.audits[0].countSaved && store.data.audits[0].status==='counting'`,
     'saving counts reveals comparison before submission',
   );
-  await fill('[data-count-field="reason"]', 'Thiếu 1 do vỡ, có xác nhận trong ca');
+  await check(
+    `!!document.querySelector('.discrepancy-card')`,
+    'count mismatch opens an actionable discrepancy',
+  );
+  await click('[data-action="audit-invoices"]');
+  await check(
+    `document.querySelector('#modal').textContent.includes('hóa đơn')`,
+    'inventory invoice inspection shows product sales',
+  );
+  await fill(
+    '#audit-invoices-form [name="note"]',
+    'Đã xem hóa đơn và phiếu nhập, không có giao dịch bỏ sót',
+  );
+  await submit('audit-invoices-form');
+  await click('[data-action="audit-recount-lot"]');
+  await fill('#audit-recount-form [name="note"]', 'Hai người đếm lại: thiếu 1 do vỡ trong ca');
+  await submit('audit-recount-form');
+
   await evaluate(
     `document.querySelector('#audit-count-form').requestSubmit(document.querySelector('#audit-count-form button[value="submit"]'))`,
   );
@@ -252,10 +270,16 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
     'admin approves the actual loss once and releases inventory locks',
   );
   await click('[data-action="close-modal"]');
+  await evaluate(`navigate('reports')`);
+  await check(
+    `store.monthEndSummary().loss>0 && document.querySelector('.month-end').textContent.includes('Thu sau hao hụt')`,
+    'approved inventory shortage is deducted in month-end reconciliation',
+  );
+  await screenshot('v3-month-end.png');
   await command('Page.reload');
   await new Promise((r) => setTimeout(r, 450));
   await check(
-    `store.data.schema===2 && store.data.purchases[0].status==='received' && store.data.audits[0].status==='approved'`,
+    `store.data.schema===3 && store.data.purchases[0].status==='received' && store.data.audits[0].status==='approved'`,
     'approved workflows and lot balances survive reload',
   );
   await command('Emulation.setDeviceMetricsOverride', {

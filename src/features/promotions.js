@@ -26,14 +26,14 @@ function promotionsView() {
       ['Chương trình', 'Phạm vi', 'Mức giảm', 'Hiệu lực', 'Trạng thái', ''],
       s.promotions.map(
         (p) =>
-          `<tr><td class="name">${e(p.name)}</td><td>${p.productIds.length} sản phẩm${p.lotIds.length ? ` · ${p.lotIds.length} lô chỉ định` : ''}</td><td>${p.type === 'percent' ? p.value + '%' : money(p.value)}</td><td>${expiryText(p.startsOn)} – ${expiryText(p.endsOn)}</td><td>${p.active ? badge('Đang bật') : badge('Tạm dừng', 'gray')}</td><td>${action('discount-edit', 'Chỉnh sửa', 'edit', 'small', `data-kind="promotion" data-id="${e(p.id)}"`)}</td></tr>`,
+          `<tr><td class="name">${e(p.name)}</td><td>${p.productIds.length} sản phẩm${p.lotIds.length ? ` · ${p.lotIds.length} lô chỉ định` : ''}</td><td>${p.type === 'quantity' ? `Mua ${p.buyQty} giảm ${money(p.value)} / nhóm cùng mã` : p.type === 'percent' ? p.value + '%' : money(p.value)}</td><td>${expiryText(p.startsOn)} – ${expiryText(p.endsOn)}</td><td>${p.active ? badge('Đang bật') : badge('Tạm dừng', 'gray')}</td><td>${action('discount-edit', 'Chỉnh sửa', 'edit', 'small', `data-kind="promotion" data-id="${e(p.id)}"`)}</td></tr>`,
       ),
     );
   return (
     heading(
       'QUẢN TRỊ / GIẢM GIÁ',
       'Voucher & chương trình khuyến mãi',
-      'Không cộng dồn: hóa đơn chọn một voucher hoặc một chương trình.',
+      'Tự động gợi ý và chọn chương trình đủ điều kiện tốt nhất. Mức giảm thực tế từ 1.000đ; không cộng dồn voucher.',
       action('discount-new', 'Thêm voucher', 'plus', '', 'data-kind="voucher"') +
         action('discount-new', 'Tạo chương trình', 'plus', 'primary', 'data-kind="promotion"'),
     ) +
@@ -131,10 +131,27 @@ function discountModal(kind, discountId = '', lotId = '') {
       [
         ['percent', 'Theo phần trăm'],
         ['fixed', 'Số tiền cố định'],
+        ...(kind === 'promotion' ? [['quantity', 'Mua đủ số lượng → giảm tiền mỗi nhóm']] : []),
       ],
       v.type,
+      'id="discount-type"',
     ) +
-    field('Mức giảm', 'value', v.value, 'number', 'required min="1" step="1"') +
+    field(
+      'Mức giảm (₫ hoặc %; số tiền từ 1.000đ)',
+      'value',
+      v.value,
+      'number',
+      `id="discount-value" required min="${v.type === 'percent' ? 1 : 1000}" ${v.type === 'percent' ? 'max="100"' : ''} step="1"`,
+    ) +
+    (kind === 'promotion'
+      ? field(
+          'Số lượng mỗi nhóm cùng mã (chỉ dùng khi mua đủ số lượng)',
+          'buyQty',
+          v.buyQty || 2,
+          'number',
+          'required min="2" step="1"',
+        )
+      : '') +
     field('Đơn tối thiểu (₫)', 'minSpend', v.minSpend, 'number', 'required min="0" step="1"') +
     field(
       'Giảm tối đa (₫, 0 = không đặt trần)',

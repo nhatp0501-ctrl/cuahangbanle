@@ -1,5 +1,11 @@
 function handleInventoryAction(a) {
   switch (a.action) {
+    case 'audit-invoices':
+      auditInvoicesModal(a.audit, a.id);
+      break;
+    case 'audit-recount-lot':
+      auditRecountModal(a.audit, a.id);
+      break;
     case 'inventory-tab':
       inventoryTab = a.tab;
       filters = {};

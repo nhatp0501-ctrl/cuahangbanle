@@ -14,13 +14,12 @@
       'suppliers',
       'customers',
       'staff',
-      'returns',
       'reports',
       'branches',
       'settings',
       'promotions',
     ],
-    CASHIER: ['pos', 'orders', 'customers', 'returns'],
+    CASHIER: ['pos', 'orders', 'customers'],
     WAREHOUSE: ['products', 'inventory', 'purchases', 'suppliers'],
   };
   const clone = (value) => JSON.parse(JSON.stringify(value));

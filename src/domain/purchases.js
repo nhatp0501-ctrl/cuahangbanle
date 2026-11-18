@@ -117,8 +117,8 @@
         assert(ordered, 'Mặt hàng không thuộc phiếu.');
         this.assertUnlocked(l.id);
         const product = this.data.products.find((i) => i.id === l.id);
-        const remaining = ordered.qty - ordered.receivedQty;
-        const actual = integer(l.actualQty, 'Số giao thực tế', 0, remaining),
+        const remaining = Math.max(0, ordered.qty - ordered.receivedQty);
+        const actual = integer(l.actualQty, 'Số giao thực tế'),
           rejected = integer(l.rejectedQty || 0, 'Số không đạt', 0, actual),
           accepted = actual - rejected;
         assert(!accepted || l.lotCode?.trim(), 'Nhập mã lô hàng thực nhận.');
@@ -129,8 +129,8 @@
           'Hàng đạt nhập kho phải có HSD hợp lệ, chưa hết hạn.',
         );
         assert(
-          !(actual < remaining || rejected) || l.reason?.trim(),
-          'Giải trình hàng thiếu hoặc không đạt.',
+          !(actual !== remaining || rejected) || l.reason?.trim(),
+          'Giải trình hàng thiếu, giao dư hoặc không đạt.',
         );
         return {
           id: ordered.id,
@@ -141,7 +141,8 @@
           actualQty: actual,
           rejectedQty: rejected,
           acceptedQty: accepted,
-          remainingAfter: remaining - accepted,
+          remainingAfter: Math.max(0, remaining - accepted),
+          surplusQty: Math.max(0, accepted - remaining),
           lotCode: l.lotCode?.trim() || '',
           expiryDate: l.expiryDate || null,
           reason: l.reason?.trim() || '',
@@ -165,7 +166,7 @@
         return r;
       });
     },
-    reviewPurchaseReceipt(receiptId, approved, note) {
+    reviewPurchaseReceipt(receiptId, approved, note, surplusDecision = '') {
       this.admin();
       assert(note?.trim(), 'Nhập kết luận đối chiếu thực nhận.');
       return this.commit(
@@ -183,29 +184,36 @@
                 ordered.receivedQty === item.previouslyReceived,
                 'Số đã nhận thay đổi; cần lập lại biên bản.',
               );
-              assert(
-                item.acceptedQty <= ordered.qty - ordered.receivedQty,
-                'Số nhận vượt lượng đặt còn thiếu.',
+              const surplus = Math.max(
+                0,
+                item.acceptedQty - Math.max(0, ordered.qty - ordered.receivedQty),
               );
-              if (item.acceptedQty) {
+              assert(
+                !surplus || ['accept', 'send_back'].includes(surplusDecision),
+                'Giao dư: admin phải chọn nhận bổ sung hoặc giao lại NCC.',
+              );
+              item.surplusDecision = surplus ? surplusDecision : '';
+              item.sentBackQty = surplusDecision === 'send_back' ? surplus : 0;
+              item.approvedQty = item.acceptedQty - item.sentBackQty;
+              if (item.approvedQty) {
                 const product = this.data.products.find((p) => p.id === item.id);
                 assert(
                   !product.tracksExpiry || item.expiryDate >= today(),
                   'Lô đã hết hạn khi admin duyệt.',
                 );
                 this.addLot(item.id, {
-                  qty: item.acceptedQty,
+                  qty: item.approvedQty,
                   expiryDate: item.expiryDate,
                   code: item.lotCode,
                   sourceId: r.id,
                 });
                 product.cost = item.price;
-                ordered.receivedQty += item.acceptedQty;
+                ordered.receivedQty += item.approvedQty;
               }
               ordered.rejectedQty += item.rejectedQty;
             }
             r.status = 'approved';
-            p.status = p.items.every((i) => i.receivedQty === i.qty)
+            p.status = p.items.every((i) => i.receivedQty >= i.qty)
               ? 'received'
               : 'partially_received';
           } else {
@@ -216,6 +224,11 @@
           r.reviewedAt = now();
           r.reviewer = this.user.name;
           p.lastReceiptAt = now();
+          p.receivedValue = p.items.reduce((sum, i) => sum + i.receivedQty * i.price, 0);
+          p.surplusValue = p.items.reduce(
+            (sum, i) => sum + Math.max(0, i.receivedQty - i.qty) * i.price,
+            0,
+          );
           return r;
         },
       );

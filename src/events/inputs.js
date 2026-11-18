@@ -7,6 +7,13 @@ document.addEventListener('input', (event) => {
   }
   if (el.id === 'global-search') globalSearch(el.value);
   if (el.id === 'cash-input') updateCash();
+  if (el.dataset.countField) updateAuditDiscrepancy(el);
+  if (el.id === 'audit-invoice-search')
+    $$('[data-invoice-search]').forEach(
+      (row) => (row.hidden = !match(row.dataset.invoiceSearch, el.value)),
+    );
+  if (el.id === 'supplier-product-search')
+    $('#supplier-product-list').innerHTML = supplierProductsHTML(modalContext.supplierId, el.value);
   if (el.dataset.listFilter !== undefined) {
     const area = el.closest('.modal-content') || el.parentElement;
     $$('[data-product-search]', area).forEach(
@@ -25,6 +32,18 @@ document.addEventListener('input', (event) => {
 document.addEventListener('change', async (event) => {
   const el = event.target;
   try {
+    if (el.id === 'discount-type') {
+      const value = $('#discount-value');
+      value.min = el.value === 'percent' ? '1' : '1000';
+      if (el.value === 'percent') value.max = '100';
+      else value.removeAttribute('max');
+      if (el.value === 'percent' && Number(value.value) > 100) value.value = '10';
+      if (el.value !== 'percent' && Number(value.value) < 1000) value.value = '5000';
+    }
+    if (el.id === 'report-month') {
+      reportMonth = el.value;
+      render();
+    }
     if (el.dataset.filter && (el.tagName === 'SELECT' || el.type === 'date')) {
       filters[el.dataset.filter] = el.value;
       pagination = {};

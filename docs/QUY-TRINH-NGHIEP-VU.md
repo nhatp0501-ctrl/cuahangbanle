@@ -1,115 +1,131 @@
-# Quy trình vận hành RetailFlow v2
+# Quy trình vận hành RetailFlow v3
 
-Tài liệu mô tả quy trình đã triển khai trong bản chạy cục bộ. Các bước trao đổi với nhà cung cấp, kiểm tra bao bì và giao nhận tiền được nhân viên xác nhận từ chứng từ thực tế; ứng dụng không tự thay nhà cung cấp hoặc ngân hàng xác nhận.
+Tài liệu mô tả chức năng đã triển khai trong ứng dụng cục bộ. Nhân viên trao đổi với NCC và đối chiếu tiền từ chứng từ thực tế; ứng dụng chưa có cổng NCC hoặc kết nối ngân hàng.
 
-## 1. Hàng tiêu dùng và hạn sử dụng
+## 1. Danh mục và nhà cung cấp
 
-- Danh mục có 186 SKU với ảnh bao bì thật lưu local. Tên/dung tích theo nguồn ảnh; giá, tồn và lô khởi tạo là dữ liệu minh họa. Mã nội bộ `RF…` không phải mã EAN do nhà sản xuất công bố.
-- Mỗi mặt hàng có nhiều lô: mã lô, HSD, tồn vật lý, số hỏng/cách ly và nguồn nhập. Tồn mặt hàng bằng tổng tồn các lô.
-- Số bán được loại trừ hàng hết hạn, hàng cách ly và lô thực phẩm chưa xác minh HSD. Không được lấy toàn bộ tồn vật lý làm số có thể bán.
-- POS xuất lô hết hạn sớm trước (FEFO). Lô bằng HSD hôm nay vẫn còn hạn theo quy ước ngày; sang ngày tiếp theo bị chặn. Với giấy/đồ dùng không quản lý HSD, hệ thống không bắt nhập HSD.
-- Hàng cận date là lô còn hạn trong 30 ngày tới. Admin vào **Voucher & khuyến mãi → Hàng cận date**, chọn đúng lô để đưa vào chương trình.
-- Đối với dữ liệu phiên bản cũ chưa từng có HSD, hệ thống giữ nguyên số lượng và đánh dấu lô cần xác minh; không tự đoán HSD thật. Admin cập nhật từ nhãn/biên bản tại **Kho → Lô & hạn sử dụng**. Mỗi lần sửa có lịch sử trước/sau, lý do và người thực hiện.
+- 186 mặt hàng tiêu dùng có ảnh bao bì thật lưu local, 10 nhóm hàng. Giá, tồn, lô và hạn dùng khởi tạo là dữ liệu mẫu; mã RF là mã nội bộ.
+- Bổ sung 19 nhà phân phối mẫu theo thương hiệu/nhóm hàng, tổng 22 hồ sơ gồm 3 hồ sơ cũ được giữ để bảo toàn lịch sử. Các tên đại lý và thông tin liên hệ là mẫu, cần cập nhật khi sử dụng thật.
+- Mỗi sản phẩm gắn một NCC. Chi tiết NCC có danh mục riêng, tìm kiếm, giá nhập/giá bán, số tồn, nút lập yêu cầu và lịch sử nhập. Phiếu nhập chỉ chọn sản phẩm của đúng NCC.
+- Khi nâng cấp, chứng từ cũ giữ nguyên NCC. Nếu đã có voucher đối tác gắn với NCC cũ, giữ liên kết các sản phẩm liên quan để không đổi phạm vi voucher một cách âm thầm.
 
-## 2. Bán hàng và thanh toán đủ một lần
+## 2. Lô, hạn sử dụng và chọn hàng
 
-1. Thu ngân tìm/quét mã hoặc chọn thẻ hàng. Chọn số lượng trong hộp thoại; có các mức nhanh và ô nhập trực tiếp.
-2. Chọn khách bằng số điện thoại hoặc để khách lẻ. Kiểm tra giỏ, số lượng và ghi chú.
-3. Chọn **một** hình thức ưu đãi: voucher hoặc chương trình khuyến mãi. Không nhập số giảm tùy ý, không cộng dồn hai loại.
-4. Kiểm tra tạm tính, phần giảm, thuế và tổng phải thanh toán.
-5. Chọn **một** phương thức: tiền mặt / chuyển khoản / thẻ. Khách phải thanh toán đủ toàn bộ hóa đơn một lần, không trả một phần, không chia phương thức và không ghi nợ.
-6. Tiền mặt: nhập tiền khách đưa, kiểm tra tiền thừa. Chuyển khoản/thẻ: đối chiếu đã nhận đủ và nhập mã giao dịch trên chứng từ.
-7. Xác nhận: tạo hóa đơn đã thanh toán, trừ lô FEFO, ghi nhận lượt voucher và xóa giỏ trong một giao dịch lưu trữ. Mã xác nhận chống ghi nhận hai lần cùng giỏ.
-8. Lưu/in hóa đơn. Hóa đơn giữ ảnh chụp tên/giá, phần giảm và lô đã xuất tại thời điểm giao dịch.
+- Theo dõi tồn vật lý và tồn bán được theo lô. Bán FEFO, ưu tiên lô còn hạn có HSD sớm nhất.
+- Lô hết hạn, chưa xác minh HSD hoặc hàng cách ly không được bán. Hàng hết hạn vẫn phải kiểm đếm vật lý và xử lý cách ly/hủy có căn cứ; không đưa vào khuyến mãi bán hàng.
+- Hàng cận date mặc định còn tối đa 30 ngày. Admin chọn lô tại Voucher & khuyến mãi → Hàng cận date để lập chương trình, chỉ giảm đúng phần xuất từ lô đó.
+- Nhấp ảnh/thẻ hoặc Chọn số lượng để nhập số trước khi thêm; có nút chọn nhanh và sửa trực tiếp số lượng trong giỏ.
 
-Đơn tạm chưa thanh toán và không giữ chỗ số lượng. Khi mở lại phải kiểm tra giá, tồn, HSD và hiệu lực ưu đãi tại thời điểm thanh toán.
+## 3. Giảm giá tối thiểu 1.000đ
 
-## 3. Hai loại voucher và chương trình khuyến mãi
+| Hình thức             | Phạm vi và cách tính                                                   |
+| --------------------- | ---------------------------------------------------------------------- |
+| Voucher cửa hàng      | Áp dụng chung toàn bộ hàng trong giỏ                                   |
+| Voucher đối tác       | Chỉ hàng thuộc NCC/đối tác được chọn; hàng của NCC khác giữ nguyên     |
+| Chương trình sản phẩm | Chỉ sản phẩm thuộc chương trình                                        |
+| Chương trình cận date | Chỉ số lượng xuất từ đúng lô còn hạn đã chọn                           |
+| Mua đủ số lượng       | Tính theo nhóm đủ số lượng của **từng mã sản phẩm** và đúng phạm vi lô |
 
-| Loại                    | Phạm vi giảm                                                                                                                              |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Voucher cửa hàng        | Toàn bộ hàng trong giỏ.                                                                                                                   |
-| Voucher đối tác         | Chỉ các sản phẩm liên kết với nhà cung cấp/đối tác được thiết lập trong voucher. Hàng của đối tác khác không được giảm.                   |
-| Chương trình khuyến mãi | Danh sách sản phẩm; có thể giới hạn đúng các lô cận date đã chọn. Lô khác của cùng sản phẩm không được giảm nếu không thuộc chương trình. |
+Giảm số tiền cố định phải từ 1.000đ. Trần giảm bằng 0 (không đặt trần) hoặc từ 1.000đ. Giảm theo % được cấu hình 1–100%, nhưng **số tiền giảm thực tế của cả ưu đãi phải từ 1.000đ** mới được áp dụng. Nếu tính ra 600đ, không tự làm tròn thành 1.000đ: chế độ tự động bỏ qua, chọn thủ công báo chưa đạt điều kiện.
 
-Admin quản lý mã, mức giảm cố định/phần trăm, giá trị tối thiểu, trần tiền giảm, khoảng ngày, số lượt và trạng thái. Ngưỡng tối thiểu phải được đáp ứng bởi phần hàng thuộc phạm vi áp dụng; không dùng hàng đối tác khác để đạt điều kiện voucher đối tác. Hệ thống kiểm tra lại trước khi thu tiền, không chỉ tại lúc chọn mã.
+Ví dụ mua 2 giảm 5.000đ: mua 1 chưa đủ; mua 2 hoặc 3 giảm 5.000đ; mua 4 hoặc 5 giảm 10.000đ, trước giới hạn trần. Một sản phẩm A và một sản phẩm B không gộp thành nhóm 2. Số giảm không vượt giá trị các nhóm được giảm và không giảm vào sản phẩm không đủ nhóm.
 
-Tiền giảm được phân bổ vào đúng dòng được áp dụng. Thuế và tiền thực trả theo dòng được lưu để các lần hoàn trả cộng lại khớp hóa đơn, kể cả làm tròn.
+### Tự động tại POS
 
-## 4. Trả hàng tách khỏi danh sách đơn bán
+1. Thẻ hàng có gợi ý ngay bên dưới: mua bao nhiêu, giảm bao nhiêu, phạm vi lô, điều kiện đơn tối thiểu/trần giảm và số còn thiếu để đủ nhóm đầu.
+2. Chế độ **Tự động KM** xét các chương trình đang hoạt động, còn hiệu lực, đủ số lượng/phạm vi và chọn **một chương trình có số tiền giảm lớn nhất** cho hóa đơn. Khi thêm/bớt hàng, đổi ngày hoặc thanh toán, tính lại điều kiện.
+3. Hiện tên chương trình và số tiền thực giảm ở giỏ để thu ngân thông báo khách. Có thể chọn chương trình thủ công hoặc áp voucher. Không cộng dồn voucher và chương trình, không cộng dồn nhiều chương trình.
+4. Bấm Không giảm để chủ động tắt ưu đãi cho giỏ hiện tại. Bấm Tự động KM hoặc Về KM tự động để bật lại.
 
-1. Nhân viên mở **Đổi trả & hoàn tiền**, nhập mã hóa đơn gốc và tra cứu.
-2. Chọn mặt hàng/số lượng còn được trả, nhập lý do và xác định điều kiện nhập lại. Gửi yêu cầu, chưa hoàn tiền, chưa cộng kho.
-3. Yêu cầu chờ duyệt giữ chỗ số lượng trả để không tạo trùng nhiều yêu cầu.
-4. Admin xem chứng từ, kiểm hàng, thực hiện/kiểm tra hoàn tiền ngoài ứng dụng rồi phê duyệt hoặc từ chối trong hệ thống.
-5. Khi duyệt, ghi tiền hoàn thực tế, người xử lý và số lượng đã trả. Hàng được nhập lại đúng lô; hàng hết hạn/chưa rõ lô phải giữ cách ly, không tự trở thành hàng bán được.
+## 4. Thanh toán và hóa đơn
 
-**Nhân viên không được tự duyệt.** Phạm vi trả một phần/toàn bộ, lịch sử yêu cầu và tiền hoàn chỉ hiển thị tại phân hệ Trả hàng. Đơn hàng và hóa đơn bán vẫn có trạng thái đã thanh toán đủ, giữ nguyên nội dung giao dịch gốc. Báo cáo doanh thu tổng hợp tiền hoàn từ các phiếu trả đã duyệt.
+Khách trả đủ toàn bộ hóa đơn trong một lần bằng một phương thức: tiền mặt, chuyển khoản hoặc thẻ. Không trả thiếu, ghi nợ, trả góp hoặc chia phương thức.
 
-## 5. Kho đề nghị nhập → admin duyệt → đối chiếu thực nhận
+Tiền mặt nhập tiền khách đưa và tính tiền thừa. Chuyển khoản/thẻ cần đánh dấu xác nhận đã nhận đủ tiền. **Không nhập mã tham chiếu:** lúc thanh toán thành công, hệ thống tự sinh mã ngẫu nhiên dạng `HDxxxxx` (5 chữ số, kiểm tra tránh trùng các giao dịch đã lưu). Đây là mã nội bộ, không giả làm mã xác nhận ngân hàng.
 
-### 5.1. Đặt hàng
+Tạo hóa đơn, trừ lô, ghi lượt voucher và xóa giỏ được lưu nguyên khối; cùng checkoutKey không tạo hóa đơn lần hai. Hóa đơn giữ tên, giá, ưu đãi, thuế và lô tại thời điểm bán. Có lưu HTML/in/PDF từ trình duyệt. Đơn tạm tối đa 5, chưa giữ chỗ tồn; mở lại phải kiểm tra điều kiện hiện tại.
 
-1. Kho xem tồn bán được, hàng cận date và các lượng đã đề nghị/chờ giao; chọn hàng cần bổ sung.
-2. Lập yêu cầu nhiều dòng theo **một nhà cung cấp**, nhập lượng đề nghị, giá dự kiến và căn cứ. Lưu nháp hoặc gửi admin.
-3. Admin duyệt nhu cầu trước khi cửa hàng đặt/trao đổi với NCC. Từ chối cần ghi rõ lý do. Kho không có nút duyệt.
-4. Yêu cầu đã duyệt là cơ sở để đối chiếu giao hàng; chưa làm tăng tồn.
+## 5. Bỏ chức năng trả hàng
 
-### 5.2. Nhận hàng tại khu vực chờ kiểm nhận
+Đã xóa menu, màn hình, nút, biểu mẫu, quyền và các phương thức tạo/phê duyệt trả hàng. Thu ngân chỉ bán hàng, quản lý khách và tra cứu hóa đơn.
 
-1. Kho ghi số phiếu giao hàng của NCC và đếm riêng từng mã hàng.
-2. Khai **số thực giao lần này**, số không đạt/trả NCC, mã lô và HSD của phần đạt. Không mặc định thực nhận bằng số đặt.
-3. Số đạt đề nghị nhập = thực giao − không đạt. Phần thiếu sau lần nhận = số đặt − số đạt đã nhập trước − số đạt lần này.
-4. Có thiếu hoặc hàng không đạt phải giải trình; ví dụ giao thiếu, móp/vỡ, sai bao bì. Số vượt lượng đặt còn lại bị chặn; cần xử lý lại nhu cầu với admin thay vì tự tăng số đặt.
-5. Gửi biên bản thực nhận lên admin. Kho chưa được cộng tồn; yêu cầu chuyển sang chờ đối chiếu, tránh tạo hai biên bản chờ cho một đơn.
-6. Admin đối chiếu chứng từ, chất lượng và HSD; **duyệt số đạt** mới tạo lô và cộng đúng số đạt. Có thể trả biên bản về để kho khai lại, không phát sinh tồn nếu bị từ chối.
+Không xóa chứng từ đã tồn tại trong bộ nhớ/sao lưu cũ. Các khoản đã duyệt trước đây chỉ được giữ như điều chỉnh lịch sử trong tổng hợp số liệu, để việc nâng cấp không làm thay đổi số tiền quá khứ. Không có thao tác tạo mới trả hàng.
 
-### 5.3. Theo dõi giao thiếu / giao bù
+## 6. Yêu cầu nhập và nhận hàng thiếu/dư
 
-Ví dụ đặt 10: NCC giao 8 nhưng 2 không đạt → số đạt 6, số còn thiếu 4. Admin duyệt nhập 6; đơn giữ trạng thái nhận thiếu. Lần sau NCC giao thêm 4 đạt, kho lập biên bản thứ hai; admin duyệt thì cộng thêm 4, tổng đạt 10 và đóng trạng thái nhận đủ.
+### Kho lập yêu cầu, admin kiểm duyệt
 
-| Trạng thái          | Người xử lý tiếp                                 | Tác động tồn                                  |
-| ------------------- | ------------------------------------------------ | --------------------------------------------- |
-| Nháp                | Kho hoàn thiện, gửi yêu cầu                      | Không                                         |
-| Chờ admin duyệt     | Admin duyệt/từ chối                              | Không                                         |
-| Đã duyệt yêu cầu    | Cửa hàng đặt NCC; kho nhận/đếm                   | Không                                         |
-| Chờ duyệt thực nhận | Admin đối chiếu                                  | Không                                         |
-| Nhận thiếu          | Kho theo dõi NCC giao bù                         | Chỉ phần đạt đã duyệt                         |
-| Nhận đủ             | Hoàn tất                                         | Tổng phần đạt theo các lần duyệt              |
-| Chốt thiếu          | Admin xác nhận NCC không giao thêm, ghi kết luận | Giữ đúng phần đã nhận; không cộng lượng thiếu |
+Kho chọn NCC, các sản phẩm thuộc NCC đó, lượng cần nhập, giá dự kiến, lý do; lưu nháp hoặc gửi admin. Có gợi ý hàng sắp hết, lượng đang đặt và lượng nên bổ sung. Lập yêu cầu chưa cộng tồn.
 
-Mỗi lần giao có biên bản riêng và có thể xem lại. Không sửa biên bản đã duyệt để giả lập nhận đủ. Admin không được duyệt cùng biên bản hai lần.
+Admin kiểm tra nhu cầu rồi duyệt/từ chối có ý kiến. Sau khi duyệt, cửa hàng liên hệ NCC. Kho không tự duyệt yêu cầu của mình.
 
-## 6. Kiểm kê thực tế và hướng xử lý
+### Thực nhận theo từng lần giao
 
-### 6.1. Chuẩn bị phạm vi
+Kho khai đầy đủ các dòng: số thực giao (cho phép giao dư), số không đạt, mã lô, HSD và giải trình thiếu/dư/không đạt; kèm mã phiếu giao của NCC. Hàng đạt phải còn hạn. Mã phiếu giao NCC là chứng từ bên ngoài, khác mã giao dịch bán hàng tự sinh.
 
-Chọn khu vực/mặt hàng có thể đếm xong trong ca (giao diện giới hạn 30 mã/phiên). Hoàn thiện chứng từ xuất/nhập đang dở trước khi mở phiên. Khi bắt đầu, hệ thống chụp tồn theo lô và **tạm khóa xuất/nhập các mặt hàng thuộc phạm vi**; hàng ngoài phạm vi vẫn giao dịch.
+Biên bản ở trạng thái chờ admin, **chưa cộng tồn**. Hiện riêng số đặt, đã nhận trước, thực giao, không đạt, đạt đề nghị, thiếu và dư. Admin duyệt mới tạo lô và cộng số được duyệt. Trả biên bản về sửa không đổi tồn.
 
-### 6.2. Đếm và đối chiếu
+### Thiếu hàng
 
-1. Kho đếm độc lập theo nhãn lô. Sổ tồn được ẩn ở bước đầu để hạn chế chép số sổ.
-2. Ghi tổng số vật lý và phần hỏng/cách ly nằm trong tổng đó. Hàng hết hạn vẫn là hàng vật lý, nhưng bị chặn bán theo HSD.
-3. Lưu tiến độ. Khi đếm đủ, hệ thống cho xem sổ và chênh lệch.
-4. Kiểm tra lại dòng lệch và ghi giải trình cụ thể trước khi gửi admin. Không tự sửa sổ cho khớp số đếm.
+Đặt 10, giao 8, không đạt 2 → đề nghị đạt 6 và thiếu 4. Admin duyệt nhập 6; đơn tiếp tục theo dõi. Lần sau nhận bù 4 đạt thì tổng nhập 10 và hoàn tất. Admin có thể chốt không giao thêm phần thiếu với lý do; không tạo tồn cho phần chưa nhận.
 
-### 6.3. Quyết định thực tế của admin
+### Giao dư
 
-| Tình huống                             | Hướng xử lý                                                                                                                                        |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Số đếm thiếu/thừa, chưa rõ nguyên nhân | Yêu cầu đếm lại; đối chiếu đúng lô, phiếu giao, bán hàng và chứng từ. Không duyệt chỉ vì đã có một số đếm.                                         |
-| Phát hiện chứng từ nhập/xuất còn thiếu | Hủy/từ chối phiên để mở khóa, hoàn thiện chứng từ hợp lệ rồi mở lại kiểm kê. Không vừa cộng theo nhập hàng vừa bù thừa qua kiểm kê cho cùng lượng. |
-| Vỡ/hỏng đã xác minh                    | Ghi biên bản và kết luận. Phần còn trong kho được cách ly; phần đã xử lý ra khỏi kho được phản ánh bằng số vật lý thực tế và lý do.                |
-| Chênh lệch vật lý xác minh được        | Admin phê duyệt điều chỉnh theo số đếm, ghi cách xử lý thiếu/thừa; hệ thống lưu giá vốn, giá trị thiếu dự kiến, người duyệt và chứng từ.           |
-| Hết hạn                                | Cách ly, không bán; xử lý theo biên bản thực tế. Nếu đã đưa ra khỏi kho/hủy, lần đếm và kết luận điều chỉnh phải khớp số còn thực sự trong kho.    |
-| Không đủ căn cứ                        | Từ chối, không thay tồn; giữ lại phiếu và nhận xét.                                                                                                |
+Đặt 10, giao 13, không đạt 1 → đạt đề nghị 12, dư đạt 2. Hệ thống lưu đủ số giao và báo dư. Kho không tự quyết phần dư. Khi duyệt, admin bắt buộc chọn:
 
-Chỉ admin được duyệt điều chỉnh. Khi duyệt, hệ thống kiểm tra mốc tồn còn khớp, cập nhật lô và hàng cách ly một lần, ghi biến động và mở khóa. Yêu cầu đếm lại xóa số đếm cũ để thực hiện lại độc lập; hủy/từ chối mở khóa mà không điều chỉnh tồn. Việc hạch toán tổn thất, xử lý trách nhiệm hoặc bồi thường là nghiệp vụ ngoài phạm vi kế toán của bản giao diện này; không tự trừ lương nhân viên.
+- **Nhận bổ sung:** nhập 12, số nhận vượt số đặt 2; giá trị thực nhập = 12 × đơn giá. Giữ số đặt gốc 10 để truy vết.
+- **Giao lại NCC phần dư:** nhập 10, ghi 2 đạt giao lại NCC; số không đạt 1 vẫn theo dõi riêng.
 
-## 7. Lưu trữ và giới hạn tích hợp
+Quyết định áp dụng mọi dòng dư trong biên bản và cần ghi kết luận đối chiếu với NCC. Hệ thống lưu số duyệt nhập, phần giao lại, giá trị thực nhập và giá trị dư; không âm lượng còn thiếu. Không được duyệt lại cùng biên bản.
 
-Bản hiện tại vẫn dùng localStorage và tài khoản thử. Quy trình phân vai chạy trong ứng dụng, chưa có tài khoản NCC, API ngân hàng, database dùng chung hoặc chữ ký chứng từ. “Admin duyệt” là thao tác thật trong luồng ứng dụng, nhưng chưa phải cơ chế bảo mật máy chủ. Cùng thiết bị có thể đăng xuất/đăng nhập để thử lần lượt các vai trò.
+## 7. Kiểm kê, hóa đơn và đếm lại
 
-Khi nâng cấp dữ liệu cũ, ứng dụng giữ bản sao trước v2 tại `retailflow.v1.before-v2`. Hóa đơn cũ và số lượng tồn không bị xóa; lô cũ thiếu HSD cần xác minh. Nên tải bản sao lưu JSON từ Cấu hình trước khi vận hành hoặc đổi trình duyệt.
+### Mở phiên và phát hiện chênh lệch
 
-Báo cáo PDF/Word trong `bao-cao/` được lập cho bản giao diện trước thay đổi nghiệp vụ này; tài liệu hiện tại mô tả v2, chưa thay thế bằng một bản PDF mới.
+Chọn phạm vi có thể đếm xong trong ca, tối đa 30 mã trên giao diện. Hoàn thiện chứng từ dở trước khi mở. Hệ thống chụp tồn lô, phần cách ly, giá vốn và giá bán; khóa xuất/nhập các mặt hàng này đến khi kết thúc.
+
+Kho đếm theo đúng lô và đơn vị, nhập tổng vật lý và phần hỏng/cách ly nằm trong tổng đó. Sổ ẩn ở bước đầu để đếm độc lập. Khi nhập lệch, xuất hiện cảnh báo ngay tại dòng. Lưu lần đếm đầu sẽ tạo yêu cầu xử lý chênh lệch và hiện các nút đối chiếu/đếm lại; chưa thay đổi tồn.
+
+Ví dụ sổ 120, đếm 121: cảnh báo dư 1. Sổ 120, đếm 119: cảnh báo thiếu 1. Hàng hỏng/cách ly lệch sổ cũng cần giải trình.
+
+### Kiểm tra hóa đơn và chốt số cuối
+
+1. Bấm **Kiểm tra hóa đơn sản phẩm** ở dòng lệch. Danh sách chỉ hóa đơn đã thanh toán có sản phẩm này, trước mốc khóa kiểm kê: mã, thời gian, khách/thu ngân, số mua và thành tiền. Có lọc mã/ngày.
+2. Đối chiếu hàng đã giao, phiếu nhập, đơn vị thùng/lốc/chai và các lô/vị trí khác. Tồn sổ đã trừ các hóa đơn đó; **không trừ số bán lần nữa**.
+3. Ghi kết quả và xác nhận đã đối chiếu, kể cả khi không có hóa đơn. Hệ thống lưu danh sách mã hóa đơn đã xem, thời điểm và người kiểm tra.
+4. Bấm **Nhập & chốt số đếm lại**. Đếm độc lập lại, nhập số thực tế cuối, phần hỏng/cách ly và kết luận. Lưu lịch sử số cũ/mới, người đếm và thời điểm.
+5. Gửi admin. Có chênh lệch mà chưa xác nhận đối chiếu và đếm lại sẽ bị chặn. Nếu sửa số lượng sau khi đã chốt, phải xác nhận đếm lại lại.
+6. Admin kiểm tra và duyệt điều chỉnh, yêu cầu đếm lại hoặc từ chối/hủy. Chỉ duyệt mới điều chỉnh từng lô, ghi biến động, xác định tổn thất và mở khóa. Không được duyệt hai lần.
+
+### Gợi ý xử lý đếm dư
+
+| Nguyên nhân có thể                         | Hướng xử lý thực tế                                                                                                                            |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Đếm trùng hoặc sai đơn vị                  | Đếm lại độc lập; kiểm tra thùng/lốc/chai và nhãn lô                                                                                            |
+| Hàng để nhầm kệ/lô                         | Soát vị trí và lô liên quan, không bù thiếu/dư giữa lô tùy ý                                                                                   |
+| NCC giao dư chưa ghi nhận                  | Xác minh phiếu giao; kết thúc/hủy phiên để hoàn thiện chứng từ nhập đúng quy trình rồi kiểm lại, tránh cộng cả nhập lẫn kiểm kê cho cùng lượng |
+| Hàng chưa giao khách dù hóa đơn đã ghi bán | Kiểm tra chứng từ bàn giao và hàng chờ nhận; xác định quyền sở hữu trước khi tăng tồn                                                          |
+| Chưa rõ nguồn gốc/HSD                      | Ghi số vật lý, cách ly phần chưa đủ căn cứ; không cho bán phần cách ly                                                                         |
+| Dư thực đã xác minh được nguồn gốc         | Admin ghi căn cứ, duyệt tăng tồn đúng lô; **không ghi hàng dư thành doanh thu bán hàng**                                                       |
+
+## 8. Khoản thiếu trong báo cáo cuối tháng
+
+Vào **Báo cáo doanh thu → Đối soát doanh thu cuối tháng & hao hụt**, chọn tháng và có thể xuất CSV.
+
+Khoản trừ quản trị = **số thiếu vật lý đã duyệt × giá bán chụp tại lúc mở kiểm kê**. Giá vốn thiếu được lưu riêng trên phiếu để có cơ sở đối soát; không lấy giá bán mới nếu sản phẩm đổi giá sau đó.
+
+Chỉ tính phiếu **đã được admin duyệt**, theo tháng duyệt ở múi giờ Việt Nam; nháp, chờ duyệt, từ chối, hủy không được trừ. Không trừ lặp khi mở lại báo cáo. Hàng dư không tự bù khoản thiếu và không tăng doanh thu.
+
+Ví dụ thu hóa đơn tháng 10.000.000đ, thiếu 2 sản phẩm giá bán 30.000đ, đã duyệt → khoản trừ 60.000đ, thu sau hao hụt 9.940.000đ (chưa có điều chỉnh lịch sử). Bảng chi tiết chỉ ra phiếu, hàng/lô, ngày duyệt, số thiếu, đơn giá và khoản trừ.
+
+Hóa đơn đã thanh toán và doanh thu bán hàng gốc vẫn giữ nguyên. “Thu sau hao hụt” là chỉ tiêu đối soát nội bộ, chưa phải lợi nhuận kế toán; không tự trừ lương nhân viên. Phần hàng hỏng còn hiện hữu trong kho được cách ly; chỉ phần đã thiếu vật lý được tính theo cơ chế này.
+
+## 9. Dữ liệu và chạy thử
+
+Chạy `node server.js`, mở http://127.0.0.1:4173. Tài khoản `admin`, `nhanvien`, `kho`, cùng mật khẩu `123456`. Đăng xuất/đăng nhập để thử phân vai trên cùng trình duyệt và địa chỉ.
+
+Schema hiện tại 3, giữ khóa `retailflow.v1`. Nâng từ schema 1 tạo bản gốc `.before-v2`; từ schema 2 tạo `.before-v3`. Phiếu kiểm kê cũ đang chờ duyệt và còn lệch được đưa về đếm/đối chiếu theo quy trình mới. Không xóa hóa đơn hoặc tồn cũ. Ưu đãi số tiền dưới 1.000đ bị tạm dừng để admin sửa.
+
+Lô cũ không có HSD phải được admin xác minh từ nhãn trước khi bán. Sao lưu JSON trong Cấu hình; dữ liệu chỉ lưu tại trình duyệt, chưa có database dùng chung. Thông tin NCC và thanh toán được nhân viên xác nhận thủ công.
+
+PDF/Word trong `bao-cao/` là báo cáo thiết kế trước v2; chưa được tạo lại cho bản v3. Tài liệu này mô tả bản đang chạy.

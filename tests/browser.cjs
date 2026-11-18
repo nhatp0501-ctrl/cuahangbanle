@@ -115,7 +115,15 @@ async function main() {
       if (await evaluate(`!!document.querySelector('#login-form')`)) break;
       await delay(100);
     }
-    await require('./retail-v2.browser.cjs')({evaluate,command,click,fill,submit,check,screenshot});
+    await require('./retail-v2.browser.cjs')({
+      evaluate,
+      command,
+      click,
+      fill,
+      submit,
+      check,
+      screenshot,
+    });
     assert.deepEqual(errors, [], 'No uncaught browser errors');
     console.log('PASS no uncaught browser errors');
   } finally {

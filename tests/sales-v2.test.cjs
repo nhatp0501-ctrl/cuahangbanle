@@ -16,7 +16,7 @@ test('catalogue has >=180 real local pack shots, and lot balances match physical
       s.data.lots.filter((l) => l.productId === p.id).reduce((a, l) => a + l.qty, 0),
     );
   }
-  assert.equal(validateBackup(s.data).schema, 2);
+  assert.equal(validateBackup(s.data).schema, 3);
 });
 test('v1 migration preserves invoices, original quantities and a backup without inventing legacy HSD', () => {
   const old = seed(),
@@ -49,16 +49,17 @@ test('cash must pay the whole invoice once; duplicate checkout key cannot deduct
   assert.equal(p.stock, before - 2);
 });
 for (const payment of ['transfer', 'card'])
-  test(`${payment} requires receipt confirmation and a reference for full value`, () => {
+  test(`${payment} requires full receipt confirmation and generates HD reference`, () => {
     const { s, p } = fixture();
     draft(s, p);
     assert.throws(() => s.checkout({ payment, paymentRef: 'X' }), /xác nhận/);
-    assert.throws(() => s.checkout({ payment, confirmed: true }), /tham chiếu/);
     const total = s.quoteDraft().total,
       o = s.checkout({ payment, confirmed: true, paymentRef: 'REF' });
     assert.equal(o.payment, payment);
     assert.equal(o.received, total);
     assert.equal(o.paymentStatus, 'paid');
+    assert.match(o.paymentRef, /^HD\d{5}$/);
+    assert.notEqual(o.paymentRef, 'REF');
   });
 test('FEFO sells the earliest valid lot and refuses expired, undated and quarantined units', () => {
   const { s, p } = fixture();
@@ -175,23 +176,11 @@ test('voucher usage, validity and minimum order are enforced at checkout', () =>
   draft(s, p, 1, { kind: 'voucher', id: exp.id });
   assert.throws(() => s.quoteDraft(), /hết hạn/);
 });
-test('refunds remain approval-only, sum exactly with discounts/tax and do not replace the paid order status', () => {
-  const { s, p } = fixture();
-  s.saveSettings({ ...s.data.settings, taxRate: 8 });
-  const v = voucher(s, { type: 'fixed', value: 1001 });
-  draft(s, p, 3, { kind: 'voucher', id: v.id });
-  const o = s.checkout({ payment: 'cash', received: 99999999 });
-  let refunded = 0;
-  for (let k = 0; k < 3; k++) {
-    s.login('nhanvien', '123456');
-    const r = s.createReturn(o.id, [{ id: p.id, qty: 1 }], 'Đổi nhu cầu', true);
-    assert.throws(() => s.resolveReturn(r.id, true), /không có quyền/);
-    s.login('admin', '123456');
-    refunded += s.resolveReturn(r.id, true).amount;
-  }
-  assert.equal(refunded, o.total);
-  assert.equal(s.data.orders.find((i) => i.id === o.id).status, 'completed');
-  assert.equal(s.available(o.id, p.id), 0);
+test('returns have no domain operations or role access', () => {
+  const { s } = fixture();
+  assert.equal(s.createReturn, undefined);
+  assert.equal(s.resolveReturn, undefined);
+  assert.equal(s.can('returns'), false);
 });
 test('held carts remain independent and restore without overwriting a current cart', () => {
   const { s, p } = fixture();
@@ -237,5 +226,5 @@ test('adding a new product with opening stock requires expiry and creates a bala
   assert.throws(() => s.upsert('products', values), /HSD/);
   const created = s.upsert('products', { ...values, expiryDate: addDays(60), lotCode: 'OPEN' });
   assert.equal(s.saleableStock(created.id), 5);
-  assert.equal(validateBackup(s.data).schema, 2);
+  assert.equal(validateBackup(s.data).schema, 3);
 });
