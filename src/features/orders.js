@@ -32,7 +32,7 @@ function ordersView() {
     heading(
       'BÁN HÀNG / HÓA ĐƠN',
       'Lịch sử đơn hàng',
-      'Giao dịch bán đã thanh toán đủ. Các yêu cầu sau bán quản lý ở phân hệ Trả hàng.',
+      'Giao dịch bán đã thanh toán đủ, lưu chi tiết ưu đãi của từng sản phẩm.',
       action('export-orders', 'Xuất CSV', 'download'),
     ) +
     stats([
@@ -97,6 +97,13 @@ function receiptHTML(o) {
         (i) =>
           '<tr><td>' +
           e(i.name) +
+          (i.appliedPromotion
+            ? '<div class="sub">' +
+              e(i.appliedPromotion.name) +
+              ' · −' +
+              money(i.lineDiscount) +
+              '</div>'
+            : '') +
           '</td><td>' +
           i.qty +
           '</td><td>' +
@@ -106,10 +113,24 @@ function receiptHTML(o) {
           '</td></tr>',
       ),
     ) +
+    (o.appliedPromotions?.length
+      ? '<div class="invoice-promotions"><h3>Các chương trình đã áp dụng</h3>' +
+        o.appliedPromotions
+          .map(
+            (r) =>
+              '<div class="between"><span>' +
+              e(r.name) +
+              '</span><span>−' +
+              money(r.discount) +
+              '</span></div>',
+          )
+          .join('') +
+        '</div>'
+      : '') +
     '<div class="receipt-total"><div class="between"><span>Tạm tính</span><span>' +
     money(o.subtotal) +
     '</span></div><div class="between"><span>' +
-    e(o.discountLabel || 'Giảm giá') +
+    e(o.appliedPromotions?.length ? 'Tổng giảm giá' : o.discountLabel || 'Giảm giá') +
     '</span><span>− ' +
     money(o.discount) +
     '</span></div><div class="between"><span>Thuế (' +

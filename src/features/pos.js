@@ -1,5 +1,10 @@
 let posProductPage = 1,
-  discountTab = store.data.draft.discountSelection?.kind || 'auto';
+  discountTab =
+    store.data.draft.discountSelection?.kind === 'promotions'
+      ? 'promotion'
+      : store.data.draft.discountSelection?.kind === 'none'
+        ? 'auto'
+        : store.data.draft.discountSelection?.kind || 'auto';
 function posView() {
   const s = store.data,
     d = s.draft,
@@ -18,7 +23,7 @@ function posView() {
     heading(
       'BÁN HÀNG / HÀNG TIÊU DÙNG',
       'Bán hàng tại quầy',
-      'Chọn hàng và số lượng → áp dụng một ưu đãi → thanh toán đủ một lần.',
+      'Chọn hàng và số lượng → tự tính nhiều khuyến mãi → thanh toán đủ một lần.',
       action('held-orders', `Đơn tạm ${s.held.length}/5`, 'clock'),
     ) +
     `<div class="pos-layout"><section class="panel"><div class="panel-head"><div><h2>Danh mục hàng tiêu dùng</h2><p class="sub">${list.length} mặt hàng · Ảnh bao bì thực tế · Giá/tồn/HSD mẫu</p></div>${badge('Bán theo lô FEFO')}</div><div class="table-tools"><div class="pos-search">${icon('search')}${filterInput('pos', 'Tên, mã sản phẩm hoặc mã vạch…')}</div>${action('scan', 'Quét mã', 'scan')}</div><div class="categories">${categories.map((c) => `<button class="${activeCategory === c ? 'active' : ''}" data-action="category" data-category="${e(c)}">${e(c)}</button>`).join('')}</div><div class="product-grid retail-product-grid">${

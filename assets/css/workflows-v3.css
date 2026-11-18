@@ -160,3 +160,34 @@ button:disabled {
     font-size: 11px;
   }
 }
+
+.applied-promotions small {
+  display: block;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+.invoice-match-table table {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 650px;
+}
+.invoice-match-table th,
+.invoice-match-table td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.invoice-match-table th:nth-child(1) {
+  width: 39%;
+}
+.invoice-match-table th:nth-child(2) {
+  width: 17%;
+}
+.invoice-match-table th:nth-child(3) {
+  width: 18%;
+}
+.invoice-match-table th:nth-child(4) {
+  width: 10%;
+}
+.invoice-match-table th:nth-child(5) {
+  width: 16%;
+}

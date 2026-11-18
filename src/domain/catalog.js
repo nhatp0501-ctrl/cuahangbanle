@@ -52,6 +52,10 @@
           supp && (supp.active || existing?.supplierId === supp.id),
           'Nhà cung cấp không hoạt động.',
         );
+        assert(
+          this.supplierAcceptsProduct(v.supplierId, v),
+          'Tên/thương hiệu sản phẩm không thuộc danh mục nhà cung cấp đã chọn.',
+        );
         v.barcode = v.barcode.trim();
         if (!existing) v.stock = integer(v.stock, 'Tồn đầu kỳ');
         else delete v.stock;
@@ -63,6 +67,23 @@
             (c) => c.id !== v.id && c.phone.replace(/\D/g, '') === v.phone.replace(/\D/g, ''),
           ),
           'Số điện thoại khách hàng đã tồn tại.',
+        );
+      }
+      if (type === 'suppliers') {
+        const catalog =
+          typeof module !== 'undefined' && module.exports
+            ? require('../data/supplier-catalog.js').supplierCatalog
+            : scope.Retail.supplierCatalog;
+        const rule = catalog.find((row) => new RegExp(row[3], 'i').test(v.name));
+        if (rule) v.supplyPattern = rule[3];
+        const pattern = v.supplyPattern || existing?.supplyPattern;
+        assert(
+          !pattern ||
+            !existing ||
+            this.data.products
+              .filter((p) => p.active && p.supplierId === existing.id)
+              .every((p) => new RegExp(pattern, 'i').test(p.name)),
+          'Nhà cung cấp đang có hàng không thuộc thương hiệu mới. Gán lại NCC cho các sản phẩm đó trước khi đổi tên.',
         );
       }
       if (type === 'staff') {

@@ -17,6 +17,8 @@
         )
         .map((o) => ({
           id: o.id,
+          productId,
+          productName: o.items.find((i) => i.id === productId).name,
           time: o.time,
           customer: o.customer,
           staff: o.staffName,
@@ -26,8 +28,10 @@
     },
     reviewAuditInvoices(auditId, productId, note) {
       this.require('inventory');
-      assert(note?.trim(), 'Ghi kết quả đối chiếu hóa đơn / chứng từ.');
       const invoices = this.auditInvoices(auditId, productId);
+      const reviewNote =
+        note?.trim() ||
+        `Đã đối chiếu ${invoices.length} hóa đơn có sản phẩm ${productId}; không liệt kê hóa đơn khác sản phẩm.`;
       return this.commit('Đối chiếu hóa đơn kiểm kê', productId, () => {
         const a = this.data.audits.find((a) => a.id === auditId);
         assert(
@@ -40,7 +44,7 @@
             i.invoiceReview = {
               time: now(),
               actor: this.user.name,
-              note: note.trim(),
+              note: reviewNote,
               invoiceIds: invoices.map((o) => o.id),
             };
           });

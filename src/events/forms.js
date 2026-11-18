@@ -77,8 +77,10 @@ document.addEventListener('submit', (event) => {
     }
   } catch (error) {
     const target = $('#form-error', form) || $('#login-error', form);
-    if (target) target.textContent = error.message;
-    else notify(error.message, true);
+    if (target) {
+      target.textContent = error.message;
+      target.scrollIntoView({ block: 'nearest' });
+    } else notify(error.message, true);
   } finally {
     form.dataset.submitting = 'false';
     if (form.isConnected) submitButtons.forEach((b, index) => (b.disabled = disabledStates[index]));

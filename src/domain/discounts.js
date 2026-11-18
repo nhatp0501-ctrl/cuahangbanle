@@ -2,37 +2,18 @@
   'use strict';
   const { assert, integer, id, clone, today, validDate, now } =
     typeof module !== 'undefined' && module.exports ? require('./config.js') : scope.Retail;
-  const { totals } =
+  const { totals, allocateInteger: allocate } =
     typeof module !== 'undefined' && module.exports ? require('./calculations.js') : scope.Retail;
-  function allocate(amount, weights) {
-    const sum = weights.reduce((a, n) => a + n, 0);
-    if (!sum) return weights.map(() => 0);
-    let remaining = amount;
-    const last = weights.findLastIndex((w) => w > 0);
-    return weights.map((w, i) => {
-      const value = i === last ? remaining : Math.floor((amount * w) / sum);
-      remaining -= value;
-      return value;
-    });
-  }
   const methods = {
     quoteDraft(draft = this.data.draft) {
       const selection = draft.discountSelection || { kind: 'none', id: '' };
-      if (selection.kind === 'auto') {
-        let best = this.quoteDraft({ ...draft, discountSelection: { kind: 'none', id: '' } });
-        for (const p of this.data.promotions) {
-          try {
-            const q = this.quoteDraft({
-              ...draft,
-              discountSelection: { kind: 'promotion', id: p.id },
-            });
-            if (q.discount > best.discount) best = q;
-          } catch {
-            /* Chưa đủ số lượng, hết hiệu lực hoặc khác lô: chưa áp dụng. */
-          }
-        }
-        return { ...best, discountSelection: { kind: 'auto', id: best.discountRule?.id || '' } };
-      }
+      if (['auto', 'promotions'].includes(selection.kind))
+        return this.quotePromotions(
+          draft,
+          this.data.promotions.filter(
+            (p) => selection.kind === 'auto' || selection.ids?.includes(p.id),
+          ),
+        );
       assert(['none', 'voucher', 'promotion'].includes(selection.kind), 'Chọn một loại giảm giá.');
       const items = draft.items.map((i) => {
         const p = this.data.products.find((p) => p.id === i.id);

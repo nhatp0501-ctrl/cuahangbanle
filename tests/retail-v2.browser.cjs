@@ -141,6 +141,29 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
     'quantity offer is hinted under the product and applied automatically',
   );
   await screenshot('v3-auto-promotions.png');
+  await evaluate(
+    `store.data.promotions.forEach(p=>p.active=false);const a=store.data.products.find(p=>p.id===${JSON.stringify(pid)}),b=store.data.products.find(p=>p.active&&p.supplierId!==a.supplierId&&p.price>=10000&&store.saleableStock(p.id)>5);for(const [p,value] of [[a,5000],[b,3000]])store.upsertDiscount('promotion',{name:'KM riêng '+p.id,type:'fixed',value,minSpend:0,maxDiscount:0,startsOn:Retail.today(),endsOn:Retail.addDays(5),active:true,productIds:[p.id],lotIds:[]});changeDraft(d=>{d.items=[];d.discountSelection={kind:'auto',id:''}});addCart(a.id,2);addCart(b.id,2)`,
+  );
+  await check(
+    `store.quoteDraft().discount===8000 && document.querySelectorAll('[data-applied-promotion]').length===2 && !document.querySelector('[data-kind="none"]')`,
+    'multiple programmes combine across products and no no-discount control exists',
+  );
+  await click('[data-action="discount-tab"][data-kind="promotion"]');
+  await click('[data-promotion-select]');
+  await click('[data-promotion-select]:not(:checked)');
+  await check(
+    `store.data.draft.discountSelection.kind==='promotions'&&store.quoteDraft().appliedPromotions.length===2`,
+    'cashier can select multiple programmes manually',
+  );
+  await screenshot('multi-promotion-cart.png');
+  await click('[data-action="checkout"]');
+  await fill('#cash-input', 99999999);
+  await submit('checkout-form');
+  await check(
+    `document.querySelector('#modal').textContent.includes('Các chương trình đã áp dụng')&&store.data.orders[0].appliedPromotions.length===2`,
+    'invoice preserves each programme and product discount',
+  );
+  await click('[data-action="close-modal"]');
   await evaluate(`navigate('suppliers')`);
   await click('[data-action="supplier-history"]');
   await check(
@@ -148,6 +171,10 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
     'each supplier detail includes its own searchable catalogue',
   );
   await click('[data-action="close-modal"]');
+  await check(
+    `store.data.products.filter(p=>p.active).every(p=>store.supplierAcceptsProduct(p.supplierId,p))&&store.data.products.filter(p=>p.active&&p.supplierId==='NCC001').every(p=>/vinamilk/i.test(p.name))&&store.data.products.filter(p=>p.active&&p.supplierId==='NCC002').every(p=>/hảo hảo|đệ nhất/i.test(p.name))`,
+    'Vinamilk, Acecook and all managed suppliers have matching brand catalogues',
+  );
   await login('kho');
   await evaluate(`navigate('purchases')`);
   await click('[data-action="purchase-new"]');
@@ -241,11 +268,16 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
     `document.querySelector('#modal').textContent.includes('hóa đơn')`,
     'inventory invoice inspection shows product sales',
   );
-  await fill(
-    '#audit-invoices-form [name="note"]',
-    'Đã xem hóa đơn và phiếu nhập, không có giao dịch bỏ sót',
+  await check(
+    `Array.from(document.querySelectorAll('[data-invoice-search]')).every(row=>{const id=row.cells[0].childNodes[0].textContent;return store.data.orders.find(o=>o.id===id)?.items.some(i=>i.id===${JSON.stringify(pid)});})`,
+    'invoice list excludes every invoice without the audited product',
   );
-  await submit('audit-invoices-form');
+  await screenshot('product-invoice-reconciliation.png');
+  await click('#audit-invoices-form button[type="submit"]');
+  await check(
+    `!!document.querySelector('#audit-count-form') && store.data.audits[0].items[0].invoiceReview.note.length>0 && !document.querySelector('[data-action="audit-recount-lot"]').disabled`,
+    'clicking confirm reconciliation without a note persists review and enables recount',
+  );
   await click('[data-action="audit-recount-lot"]');
   await fill('#audit-recount-form [name="note"]', 'Hai người đếm lại: thiếu 1 do vỡ trong ca');
   await submit('audit-recount-form');

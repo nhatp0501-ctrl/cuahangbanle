@@ -33,7 +33,7 @@ function promotionsView() {
     heading(
       'QUẢN TRỊ / GIẢM GIÁ',
       'Voucher & chương trình khuyến mãi',
-      'Tự động gợi ý và chọn chương trình đủ điều kiện tốt nhất. Mức giảm thực tế từ 1.000đ; không cộng dồn voucher.',
+      'Tự động áp dụng nhiều chương trình cho các sản phẩm khác nhau. Mức giảm thực tế từ 1.000đ; không cộng dồn voucher.',
       action('discount-new', 'Thêm voucher', 'plus', '', 'data-kind="voucher"') +
         action('discount-new', 'Tạo chương trình', 'plus', 'primary', 'data-kind="promotion"'),
     ) +

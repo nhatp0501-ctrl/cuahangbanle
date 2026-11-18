@@ -25,14 +25,14 @@ Mở **http://127.0.0.1:4173**. Cần Node.js, không cần cài thư viện đ�
 - **186 sản phẩm, 186 ảnh bao bì thật**, 10 nhóm hàng. Ảnh local, nguồn tại `assets/products/sources.json`; giá/tồn/HSD khởi tạo là mẫu. Mã RF là mã nội bộ.
 - **Chọn số lượng** trước khi thêm và sửa tại giỏ, tìm/quét mã, lọc danh mục, phân trang 24 sản phẩm. Tìm khách theo số điện thoại với gợi ý thu hẹp khi nhập.
 - **Giảm giá từ 1.000đ**: voucher cửa hàng áp chung; voucher đối tác chỉ hàng của đối tác. Cố định, phần trăm hoặc chương trình mua đủ số lượng, ví dụ mua 2 giảm 5.000đ, mua 4 giảm 10.000đ theo nhóm cùng SKU. Không cộng dồn voucher/chương trình.
-- **Khuyến mãi tự động**: hiện gợi ý ngay dưới sản phẩm; mặc định chọn một chương trình đủ điều kiện có mức giảm tốt nhất, tính lại khi thay số lượng. Có thể chọn thủ công, dùng voucher hoặc tắt giảm giá.
+- **Nhiều khuyến mãi trên một hóa đơn**: hiện gợi ý dưới sản phẩm; tự tính các chương trình cho nhiều mặt hàng khác nhau, hiển thị riêng từng khoản giảm và lưu vào hóa đơn. Cùng mã hàng không bị giảm chồng; kiểm tra lại trần và đơn tối thiểu theo hàng thực áp dụng. Có thể chọn nhiều chương trình bằng checkbox hoặc thay bằng voucher. Đã bỏ nút Không giảm.
 - **Lô/HSD và FEFO**: không bán hàng hết hạn, chưa xác minh HSD hoặc cách ly. Chỉ phần xuất từ lô được chọn mới nhận khuyến mãi cận date.
 - **Thanh toán đủ một lần** bằng tiền mặt, chuyển khoản hoặc thẻ. Không ghi nợ/chia tiền. Mã giao dịch ngẫu nhiên `HDxxxxx` tự sinh, không phải nhập. Lưu hóa đơn HTML/in/PDF, chống thanh toán lặp cùng giỏ, tối đa 5 đơn tạm.
 - **Bỏ chức năng trả hàng** khỏi menu, quyền, màn hình, nút và xử lý nghiệp vụ. Chứng từ cũ chỉ giữ phục vụ số liệu lịch sử, không có thao tác trả hàng mới.
-- **22 hồ sơ NCC**, gồm 19 nhà phân phối mẫu mới theo nhóm thương hiệu. Chi tiết mỗi NCC có danh mục riêng, tìm kiếm, giá/tồn, lập yêu cầu và lịch sử. Không chọn hàng NCC khác vào phiếu nhập.
+- **Danh mục đúng NCC/thương hiệu**: 22 hồ sơ gồm các nhà phân phối mẫu; hai hồ sơ trùng Vinamilk/Acecook chuyển ngừng hoạt động, giữ để xem lịch sử. Vinamilk chỉ có hàng Vinamilk; Acecook chỉ các dòng Hảo Hảo/Đệ Nhất. Tên đại lý chỉ rõ nhãn hàng cung cấp. Chặn gán hàng sai thương hiệu khi sửa sản phẩm/lập phiếu nhập.
 - **Kho đề nghị → admin duyệt → kho báo thực nhận → admin chốt**. Có gợi ý hàng sắp hết. Theo dõi đặt, giao thực tế, không đạt, nhập đạt, thiếu/dư và từng lần giao bù.
 - **Giao dư** được ghi đủ, báo ngay. Admin bắt buộc chọn nhận bổ sung hoặc giao lại phần dư cho NCC; chỉ số duyệt mới tăng tồn, giá trị thực nhập theo lượng nhập thực tế.
-- **Kiểm kê** khóa xuất/nhập trong phạm vi, cảnh báo lệch, lưu số đếm, tra hóa đơn đúng sản phẩm, ghi kết quả đối chiếu và chốt số đếm lại trước khi gửi admin. Admin duyệt mới chỉnh tồn.
+- **Kiểm kê** khóa xuất/nhập trong phạm vi, cảnh báo lệch, lưu số đếm, chỉ liệt kê hóa đơn có đúng mã sản phẩm và tính phần hàng đang kiểm kê trong hóa đơn hỗn hợp. Bấm xác nhận đối chiếu trực tiếp, ghi chú tùy chọn; sau đó chốt số đếm lại trước khi gửi admin.
 - **Đối soát cuối tháng**: khoản thiếu đã duyệt × giá bán chụp lúc mở kiểm kê được trừ khỏi thu quản trị sau hao hụt; có bảng chi tiết và CSV. Hóa đơn gốc giữ nguyên, hàng dư không tự tạo doanh thu hoặc bù thiếu.
 - Nút tác vụ có màu và trạng thái chọn/khóa rõ ràng, bàn phím có viền focus. Có nhân sự, báo cáo, cấu hình, sao lưu/khôi phục và đề xuất chi nhánh.
 
@@ -40,7 +40,7 @@ Hướng dẫn quy trình và các trường hợp thiếu/dư: **[docs/QUY-TRIN
 
 ## Dữ liệu khi nâng cấp
 
-Khóa localStorage vẫn là `retailflow.v1`, cấu trúc schema 3. Giữ bản gốc trước nâng cấp tại `.before-v2` hoặc `.before-v3` tương ứng phiên bản nguồn. Không xóa hóa đơn/tồn cũ. Ưu đãi số tiền dưới 1.000đ tạm dừng để admin sửa. Giữ liên kết NCC cho voucher đối tác đã có; chứng từ nhập cũ giữ NCC gốc.
+Khóa localStorage vẫn là `retailflow.v1`, cấu trúc schema 3. Giữ bản gốc trước nâng cấp tại `.before-v2` hoặc `.before-v3` tương ứng phiên bản nguồn. Không xóa hóa đơn/tồn cũ. Ưu đãi số tiền dưới 1.000đ tạm dừng để admin sửa. Sửa các liên kết hàng sai NCC kể cả khi có voucher cũ; phạm vi voucher đối tác được lọc về đúng hàng của NCC. Voucher có phạm vi cụ thể nhưng sau sửa không còn hàng phù hợp sẽ tạm dừng để admin chọn lại. Chứng từ đã hoàn tất giữ thông tin lịch sử.
 
 Lô cũ không có HSD bị chặn bán đến khi admin xác minh tại Kho → Lô & hạn sử dụng. Phiếu kiểm kê đang chờ và còn lệch cần hoàn tất đối chiếu/đếm lại theo quy trình mới. Tải sao lưu JSON trong Cấu hình; khôi phục kiểm tra cân bằng tồn theo lô. `localhost` và `127.0.0.1` có bộ nhớ riêng; đăng xuất không xóa dữ liệu.
 
@@ -53,6 +53,8 @@ src/domain/                       Quy tắc nghiệp vụ dùng chung với ki�
   operational-migrations.js        Nâng cấp NCC, ưu đãi và quy trình v3
   lots.js                         FEFO, HSD, số bán được
   discounts.js                    Voucher, phạm vi, mua đủ số lượng, chọn KM tự động
+  promotion-combinations.js       Tính kết hợp nhiều chương trình, tránh giảm chồng
+  supplier-matching.js            Sửa danh mục và kiểm tra thương hiệu theo NCC
   sales.js                        Giỏ, đơn tạm, thanh toán, mã HD tự sinh
   purchases.js                    Yêu cầu, duyệt, thiếu/dư và thực nhận
   inventory.js                    Kiểm đếm và duyệt điều chỉnh
@@ -79,7 +81,7 @@ npm run test:browser
 npm run verify:assets
 ```
 
-32 kiểm thử nghiệp vụ, kiểm thử Edge xuyên suốt ba vai trò và kiểm tra tài nguyên ảnh. Bao gồm mức giảm tối thiểu, nhóm cùng SKU/đúng lô, voucher đối tác, thanh toán/mã tự sinh, nhận thiếu/giao dư, đối chiếu/đếm lại, khoản trừ tháng, nâng cấp và lưu nhiều dòng nhập nguyên khối khi có lỗi. Kiểm thử trình duyệt dùng hồ sơ riêng, ảnh kết quả tại `preview/`.
+41 kiểm thử nghiệp vụ, kiểm thử Edge xuyên suốt ba vai trò và kiểm tra tài nguyên ảnh. Bao gồm nhiều KM trên nhiều hàng, kiểm tra trần/đơn tối thiểu, phân bổ tiền nguyên, danh mục đúng NCC, lọc hóa đơn và bấm xác nhận không ghi chú, cùng các luồng thanh toán/nhập/kiểm kê và lưu nguyên khối. Kiểm thử trình duyệt dùng hồ sơ riêng, ảnh kết quả tại `preview/`.
 
 ## Phạm vi tích hợp
 

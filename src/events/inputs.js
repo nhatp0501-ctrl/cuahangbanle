@@ -53,6 +53,7 @@ document.addEventListener('change', async (event) => {
       setCartQuantity(el.dataset.cartQuantity, Number(el.value));
     }
     if (el.id === 'cart-promotion' && el.value) applyDiscount('promotion', el.value);
+    if (el.dataset.promotionSelect) selectCartPromotion(el.dataset.promotionSelect, el.checked);
     if (el.id === 'cart-note') changeDraft((d) => (d.note = el.value));
     if (el.id === 'purchase-supplier') updatePurchaseOptions();
     if (el.id === 'purchase-product')

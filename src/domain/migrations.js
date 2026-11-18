@@ -214,6 +214,11 @@
         ? require('./operational-migrations.js')
         : scope.Retail;
     migrateOperations(s);
+    const { repairSupplierCatalog } =
+      typeof module !== 'undefined' && module.exports
+        ? require('./supplier-matching.js')
+        : scope.Retail;
+    repairSupplierCatalog(s);
     if (oldSchema)
       s.logs.unshift({
         id: id('LOG'),

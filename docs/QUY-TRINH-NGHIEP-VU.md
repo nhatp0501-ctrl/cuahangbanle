@@ -7,7 +7,7 @@ Tài liệu mô tả chức năng đã triển khai trong ứng dụng cục b�
 - 186 mặt hàng tiêu dùng có ảnh bao bì thật lưu local, 10 nhóm hàng. Giá, tồn, lô và hạn dùng khởi tạo là dữ liệu mẫu; mã RF là mã nội bộ.
 - Bổ sung 19 nhà phân phối mẫu theo thương hiệu/nhóm hàng, tổng 22 hồ sơ gồm 3 hồ sơ cũ được giữ để bảo toàn lịch sử. Các tên đại lý và thông tin liên hệ là mẫu, cần cập nhật khi sử dụng thật.
 - Mỗi sản phẩm gắn một NCC. Chi tiết NCC có danh mục riêng, tìm kiếm, giá nhập/giá bán, số tồn, nút lập yêu cầu và lịch sử nhập. Phiếu nhập chỉ chọn sản phẩm của đúng NCC.
-- Khi nâng cấp, chứng từ cũ giữ nguyên NCC. Nếu đã có voucher đối tác gắn với NCC cũ, giữ liên kết các sản phẩm liên quan để không đổi phạm vi voucher một cách âm thầm.
+- Danh mục được sửa về đúng thương hiệu: Vinamilk chỉ hàng Vinamilk, Acecook chỉ dòng hàng tương ứng. Không giữ liên kết sai chỉ vì có voucher cũ. Voucher chỉ định hàng được lọc về đúng NCC; nếu không còn hàng phù hợp thì tạm dừng để admin sửa. Hai hồ sơ đại lý trùng được gộp sang hồ sơ chính; chứng từ đã hoàn tất giữ thông tin lịch sử. Chặn hàng sai phạm vi khi sửa sản phẩm hoặc lập phiếu nhập.
 
 ## 2. Lô, hạn sử dụng và chọn hàng
 
@@ -33,9 +33,9 @@ Ví dụ mua 2 giảm 5.000đ: mua 1 chưa đủ; mua 2 hoặc 3 giảm 5.000đ;
 ### Tự động tại POS
 
 1. Thẻ hàng có gợi ý ngay bên dưới: mua bao nhiêu, giảm bao nhiêu, phạm vi lô, điều kiện đơn tối thiểu/trần giảm và số còn thiếu để đủ nhóm đầu.
-2. Chế độ **Tự động KM** xét các chương trình đang hoạt động, còn hiệu lực, đủ số lượng/phạm vi và chọn **một chương trình có số tiền giảm lớn nhất** cho hóa đơn. Khi thêm/bớt hàng, đổi ngày hoặc thanh toán, tính lại điều kiện.
-3. Hiện tên chương trình và số tiền thực giảm ở giỏ để thu ngân thông báo khách. Có thể chọn chương trình thủ công hoặc áp voucher. Không cộng dồn voucher và chương trình, không cộng dồn nhiều chương trình.
-4. Bấm Không giảm để chủ động tắt ưu đãi cho giỏ hiện tại. Bấm Tự động KM hoặc Về KM tự động để bật lại.
+2. Chế độ **Tự động KM** áp dụng **nhiều chương trình cho các sản phẩm khác nhau**. Cùng một mã hàng chỉ nhận một chương trình, ưu tiên mức giảm tốt hơn. Tính lại số lượng/phạm vi lô, thời gian, đơn tối thiểu và trần giảm theo nhóm hàng thực áp dụng; không cộng nguyên các báo giá bị chồng lấn.
+3. Giỏ và hóa đơn hiển thị riêng tên từng chương trình, hàng áp dụng và khoản giảm; tổng giảm là tổng các chương trình đã áp dụng. Ví dụ A mua 2 giảm 5.000đ, B giảm 3.000đ → cùng hóa đơn giảm 8.000đ. Tab **Chọn nhiều KM** cho đánh dấu nhiều chương trình. Voucher thay thế nhóm chương trình, vẫn đúng phạm vi cửa hàng/đối tác.
+4. Đã bỏ nút Không giảm. Nếu chưa có chương trình đủ điều kiện, số giảm là 0 và ứng dụng tự xét lại khi thêm/bớt hàng. Bấm Tự động KM hoặc Về KM tự động để quay lại chế độ tự tính.
 
 ## 4. Thanh toán và hóa đơn
 
@@ -92,7 +92,7 @@ Ví dụ sổ 120, đếm 121: cảnh báo dư 1. Sổ 120, đếm 119: cảnh b
 
 1. Bấm **Kiểm tra hóa đơn sản phẩm** ở dòng lệch. Danh sách chỉ hóa đơn đã thanh toán có sản phẩm này, trước mốc khóa kiểm kê: mã, thời gian, khách/thu ngân, số mua và thành tiền. Có lọc mã/ngày.
 2. Đối chiếu hàng đã giao, phiếu nhập, đơn vị thùng/lốc/chai và các lô/vị trí khác. Tồn sổ đã trừ các hóa đơn đó; **không trừ số bán lần nữa**.
-3. Ghi kết quả và xác nhận đã đối chiếu, kể cả khi không có hóa đơn. Hệ thống lưu danh sách mã hóa đơn đã xem, thời điểm và người kiểm tra.
+3. Danh sách chỉ chứa hóa đơn có đúng mã sản phẩm, kể cả hóa đơn nhiều mặt hàng; số lượng/thành tiền hiển thị chỉ là phần của mã đang kiểm kê. Hóa đơn không có mã đó bị loại. Bấm **Xác nhận đã đối chiếu** trực tiếp; ghi chú không bắt buộc. Nếu để trống, hệ thống lưu xác nhận kèm mã sản phẩm và số hóa đơn đã lọc, thời điểm, người kiểm tra, rồi quay về phiếu và mở nút chốt đếm lại.
 4. Bấm **Nhập & chốt số đếm lại**. Đếm độc lập lại, nhập số thực tế cuối, phần hỏng/cách ly và kết luận. Lưu lịch sử số cũ/mới, người đếm và thời điểm.
 5. Gửi admin. Có chênh lệch mà chưa xác nhận đối chiếu và đếm lại sẽ bị chặn. Nếu sửa số lượng sau khi đã chốt, phải xác nhận đếm lại lại.
 6. Admin kiểm tra và duyệt điều chỉnh, yêu cầu đếm lại hoặc từ chối/hủy. Chỉ duyệt mới điều chỉnh từng lô, ghi biến động, xác định tổn thất và mở khóa. Không được duyệt hai lần.

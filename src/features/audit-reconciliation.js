@@ -21,13 +21,14 @@ function auditInvoicesModal(auditId, productId) {
   modalContext = { type: 'audit-invoices', auditId, productId };
   showModal(
     'Đối chiếu hóa đơn sản phẩm',
-    `<form id="audit-invoices-form"><div class="modal-content stack"><h3>${e(i.name)}</h3><p class="note">Hóa đơn đã thanh toán trước mốc khóa kiểm kê ${date(a.time)}. Tồn sổ đã trừ các hóa đơn này; không trừ số bán lần nữa. Đối chiếu cả phiếu nhập và đơn vị thùng/lốc/chai.</p><input id="audit-invoice-search" placeholder="Lọc mã hóa đơn hoặc ngày…" aria-label="Lọc hóa đơn sản phẩm">${table(
-      ['Hóa đơn', 'Ngày', 'Khách / Thu ngân', 'Số đã mua', 'Thành tiền'],
+    `<form id="audit-invoices-form"><div class="modal-content stack"><h3>${e(i.name)}</h3><p class="badge">Mã sản phẩm: ${e(productId)}</p><p class="note">Chỉ liệt kê hóa đơn có đúng mã ${e(productId)}; mỗi dòng dưới đây chỉ tính số lượng và tiền của sản phẩm đang kiểm kê. Hóa đơn đã thanh toán trước mốc khóa kiểm kê ${date(a.time)}. Tồn sổ đã trừ các hóa đơn này; không trừ số bán lần nữa. Đối chiếu cả phiếu nhập và đơn vị thùng/lốc/chai.</p><input id="audit-invoice-search" placeholder="Lọc mã hóa đơn hoặc ngày…" aria-label="Lọc hóa đơn sản phẩm">${table(
+      ['Hóa đơn / sản phẩm khớp', 'Ngày', 'Khách / Thu ngân', 'Số đã mua', 'Thành tiền sản phẩm'],
       invoices.map(
         (o) =>
-          `<tr data-invoice-search="${e(o.id + ' ' + date(o.time))}"><td>${e(o.id)}</td><td>${date(o.time)}</td><td>${e(o.customer)}<div class="sub">${e(o.staff)}</div></td><td>${o.qty}</td><td>${money(o.amount)}</td></tr>`,
+          `<tr data-invoice-search="${e(o.id + ' ' + date(o.time))}"><td>${e(o.id)}<div class="sub">${e(o.productId)} · ${e(o.productName)}</div></td><td>${date(o.time)}</td><td>${e(o.customer)}<div class="sub">${e(o.staff)}</div></td><td>${o.qty}</td><td>${money(o.amount)}</td></tr>`,
       ),
-    )}<p>${invoices.length} hóa đơn · Tổng số lượng bán ${invoices.reduce((s, o) => s + o.qty, 0)}</p>${textField('Kết quả kiểm tra hóa đơn và chứng từ', 'note', i.invoiceReview?.note || '')}${formError()}</div>${auditReconciliationFoot(auditId, 'Xác nhận đã đối chiếu')}</form>`,
+      'invoice-match-table',
+    )}<p>${invoices.length} hóa đơn · Tổng số lượng bán ${invoices.reduce((s, o) => s + o.qty, 0)}</p>${textField('Ghi chú đối chiếu (không bắt buộc)', 'note', i.invoiceReview?.note || '')}${formError()}</div>${auditReconciliationFoot(auditId, 'Xác nhận đã đối chiếu')}</form>`,
     true,
   );
 }

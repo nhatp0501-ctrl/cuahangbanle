@@ -78,10 +78,12 @@
     'auth',
     'lots',
     'discounts',
+    'promotionCombinations',
     'sales',
     'inventory',
     'reconciliation',
     'catalog',
+    'supplierMatching',
     'purchases',
     'settings',
   ];
@@ -89,7 +91,14 @@
     Object.assign(
       Store.prototype,
       typeof module !== 'undefined' && module.exports
-        ? require('./' + name + '.js')
+        ? require(
+            './' +
+              ({
+                promotionCombinations: 'promotion-combinations',
+                supplierMatching: 'supplier-matching',
+              }[name] || name) +
+              '.js',
+          )
         : scope.Retail.storeModules[name],
     );
   if (typeof module !== 'undefined' && module.exports) module.exports = { ...api, Store };

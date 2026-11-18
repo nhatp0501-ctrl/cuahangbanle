@@ -12,7 +12,7 @@ function handleSalesAction(a) {
       break;
     case 'discount-tab':
       discountTab = a.kind;
-      if (['none', 'auto'].includes(a.kind))
+      if (a.kind === 'auto')
         changeDraft((d) => {
           d.discountSelection = { kind: a.kind, id: '' };
         });
@@ -97,7 +97,12 @@ function handleSalesAction(a) {
 
     case 'restore-held':
       store.restoreHeld(a.id);
-      discountTab = store.data.draft.discountSelection?.kind || 'auto';
+      discountTab =
+        store.data.draft.discountSelection?.kind === 'promotions'
+          ? 'promotion'
+          : store.data.draft.discountSelection?.kind === 'voucher'
+            ? 'voucher'
+            : 'auto';
       closeModal();
       render();
       notify('Đã mở lại đơn tạm.');

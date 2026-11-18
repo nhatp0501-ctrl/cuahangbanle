@@ -17,6 +17,10 @@
           (p) => p.id === i.id && p.supplierId === supplierId && p.active,
         );
         assert(p, 'Mặt hàng không thuộc nhà cung cấp hoặc ngừng bán.');
+        assert(
+          this.supplierAcceptsProduct(supplierId, p),
+          'Mặt hàng không đúng thương hiệu/phạm vi cung cấp của NCC.',
+        );
         return {
           id: p.id,
           name: p.name,
@@ -70,6 +74,17 @@
           assert(
             !approved || this.data.suppliers.find((s) => s.id === p.supplierId)?.active,
             'Nhà cung cấp không hoạt động.',
+          );
+          assert(
+            !approved ||
+              p.items.every((i) => {
+                const product = this.data.products.find((x) => x.id === i.id);
+                return (
+                  product?.supplierId === p.supplierId &&
+                  this.supplierAcceptsProduct(p.supplierId, product)
+                );
+              }),
+            'Phiếu có sản phẩm không thuộc NCC. Hủy yêu cầu sai và lập lại với đúng nhà cung cấp.',
           );
           p.status = approved ? 'approved' : 'rejected';
           p.reviewNote = note.trim();

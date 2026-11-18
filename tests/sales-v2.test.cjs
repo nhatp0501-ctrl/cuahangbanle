@@ -211,7 +211,7 @@ test('failed writes and newer tabs cannot produce a partial sale', () => {
 test('adding a new product with opening stock requires expiry and creates a balanced lot', () => {
   const { s, p } = fixture();
   const values = {
-    name: 'Test product',
+    name: 'Sữa Vinamilk thử nghiệm',
     category: 'Thực phẩm',
     price: 1000,
     cost: 700,
