@@ -1,0 +1,1565 @@
+[
+  {
+    "code": "00",
+    "title": "BÁO CÁO THIẾT KẾ GIAO DIỆN",
+    "lead": "Hệ thống quản lý cửa hàng bán lẻ RetailFlow",
+    "blocks": []
+  },
+  {
+    "code": "01",
+    "title": "Mục lục và phạm vi tài liệu",
+    "lead": "Báo cáo mô tả thiết kế hiện có của dự án, có ảnh chụp và đặc tả tương tác.",
+    "blocks": [
+      {
+        "type": "toc"
+      },
+      {
+        "type": "heading",
+        "text": "Thông tin tài liệu"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Hạng mục",
+          "Nội dung"
+        ],
+        "rows": [
+          [
+            "Đề tài",
+            "Thiết kế giao diện hệ thống quản lý cửa hàng bán lẻ RetailFlow."
+          ],
+          [
+            "Ngày lập",
+            "16/11/2026 · Phiên bản báo cáo 1.0."
+          ],
+          [
+            "Đối tượng sử dụng",
+            "Người đánh giá đề tài, người vận hành cửa hàng và người phát triển."
+          ],
+          [
+            "Căn cứ",
+            "Bài giảng “Thiết kế giao diện.pdf” (58 trang), mã nguồn và màn hình đang chạy của RetailFlow."
+          ],
+          [
+            "Phạm vi",
+            "Đăng nhập và 13 phân hệ; bán hàng, hóa đơn, trả hàng, kho và quản trị."
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "title": "Cách đọc báo cáo",
+        "text": "Nội dung áp dụng nguyên tắc trong tài liệu tham khảo vào dự án. Những chức năng chưa tích hợp được ghi riêng ở phần giới hạn, không được xem là đã triển khai."
+      }
+    ]
+  },
+  {
+    "code": "02",
+    "title": "Cơ sở thiết kế theo tài liệu tham khảo",
+    "lead": "Chuyển các nguyên tắc trong bài giảng thành tiêu chí thiết kế và đánh giá cụ thể.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Tài liệu tham khảo xác định thiết kế giao diện là mô tả cách người dùng trao đổi với phần mềm khi thực hiện nghiệp vụ. Báo cáo tổ chức đặc tả theo dữ liệu người dùng đưa vào (D1), kết quả hệ thống trả ra (D2), cách trình bày và các biến cố phải xử lý [1, tr. 4]."
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Nhóm nguyên tắc trong [1]",
+          "Áp dụng cho RetailFlow"
+        ],
+        "rows": [
+          [
+            "Tiện dụng, hiệu quả, tiến hóa — tr. 17–22",
+            "Dùng nhãn tiếng Việt; tách khu vực sản phẩm/giỏ hàng; tính tiền tự động; chia mã theo chức năng để dễ bổ sung."
+          ],
+          [
+            "Nhất quán và phản hồi — tr. 18–26",
+            "Giữ vị trí menu, màu nút và dạng bảng; thông báo khi lưu/thanh toán; xác nhận trước khi hủy hoặc hoàn tiền."
+          ],
+          [
+            "Giao diện nhập — tr. 27–29",
+            "Kiểm tra số lượng, giá tiền và thông tin bắt buộc; chọn dữ liệu đã có; hạn chế nhập lặp lại."
+          ],
+          [
+            "Giao diện xuất — tr. 30–32",
+            "Bảng phục vụ tra cứu chi tiết; biểu đồ phục vụ nhận biết xu hướng; hóa đơn có tổng tiền và hình thức thanh toán."
+          ],
+          [
+            "Đối thoại — tr. 33–37",
+            "Tách nội dung nghiệp vụ, trình tự thao tác và cách dùng từ/biểu tượng; dùng hộp thoại cho tác vụ tập trung."
+          ],
+          [
+            "Tra cứu — tr. 58",
+            "Kết hợp từ khóa, trạng thái, ngày và phương thức; tra khách theo tiền tố số điện thoại."
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Ba mức thiết kế đối thoại"
+      },
+      {
+        "type": "bullets",
+        "items": [
+          "Ngữ nghĩa: người dùng cần làm gì và cần những dữ liệu nào, ví dụ trả một sản phẩm của hóa đơn đã mua.",
+          "Cú pháp: các bước xảy ra theo thứ tự nào, ví dụ tìm hóa đơn → chọn số lượng → gửi yêu cầu → phê duyệt.",
+          "Từ vựng: nhãn, biểu tượng và trạng thái được thể hiện như thế nào, ví dụ “Chờ phê duyệt”, “Đã hoàn tiền”."
+        ]
+      },
+      {
+        "type": "note",
+        "title": "Phân biệt căn cứ và hiện trạng",
+        "text": "Các đề xuất trong bài giảng là tiêu chí tham khảo. Chẳng hạn Undo/Redo, trợ giúp trực tuyến và tùy biến chủ đề chưa có trong bản hiện tại; không khẳng định hệ thống đã đáp ứng toàn bộ tiêu chí."
+      }
+    ]
+  },
+  {
+    "code": "03",
+    "title": "Người dùng và phân quyền",
+    "lead": "Thiết kế menu và hành động phù hợp với công việc của từng vai trò.",
+    "blocks": [
+      {
+        "type": "table",
+        "headers": [
+          "Vai trò",
+          "Nhu cầu sử dụng",
+          "Phạm vi giao diện"
+        ],
+        "rows": [
+          [
+            "Quản trị viên",
+            "Theo dõi kinh doanh, quản lý danh mục, nhân sự và phê duyệt.",
+            "Toàn bộ phân hệ; cấu hình, báo cáo, tài khoản và phê duyệt hoàn tiền."
+          ],
+          [
+            "Thu ngân",
+            "Bán hàng nhanh, tìm khách, lưu/in hóa đơn và tiếp nhận trả hàng.",
+            "POS, đơn hàng, khách hàng và yêu cầu trả hàng."
+          ],
+          [
+            "Nhân viên kho",
+            "Theo dõi tồn, nhập hàng và kiểm kê thực tế.",
+            "Xem sản phẩm; kho/kiểm kê; nhập hàng; nhà cung cấp."
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Ma trận thao tác quan trọng"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Thao tác",
+          "Quản trị",
+          "Thu ngân",
+          "Kho"
+        ],
+        "rows": [
+          [
+            "Lập đơn và thanh toán",
+            "Có",
+            "Có",
+            "Không"
+          ],
+          [
+            "Thêm/sửa sản phẩm",
+            "Có",
+            "Không",
+            "Chỉ xem"
+          ],
+          [
+            "Tạo yêu cầu trả hàng",
+            "Có",
+            "Có",
+            "Không"
+          ],
+          [
+            "Duyệt/từ chối hoàn tiền",
+            "Có",
+            "Không",
+            "Không"
+          ],
+          [
+            "Nhập hàng và kiểm kê",
+            "Có",
+            "Không",
+            "Có"
+          ],
+          [
+            "Quản lý hồ sơ khách hàng",
+            "Có",
+            "Có",
+            "Không"
+          ],
+          [
+            "Tài khoản, cấu hình, báo cáo",
+            "Có",
+            "Không",
+            "Không"
+          ]
+        ]
+      },
+      {
+        "type": "bullets",
+        "items": [
+          "Sau đăng nhập, thu ngân được đưa tới POS; nhân viên kho tới danh sách sản phẩm; quản trị tới tổng quan.",
+          "Menu chỉ hiển thị các màn hình thuộc quyền. Tầng nghiệp vụ cũng kiểm tra vai trò khi thực hiện thao tác.",
+          "Không cho khóa/hạ quyền tài khoản quản trị đang sử dụng; phải giữ ít nhất một quản trị viên hoạt động."
+        ]
+      },
+      {
+        "type": "note",
+        "title": "Phạm vi bảo mật",
+        "text": "Phân quyền hiện chạy trong ứng dụng frontend và dữ liệu trình duyệt. Đây là mô phỏng nghiệp vụ, chưa thay thế xác thực và kiểm soát quyền ở máy chủ cho vận hành thật."
+      }
+    ]
+  },
+  {
+    "code": "04",
+    "title": "Kiến trúc thông tin và điều hướng",
+    "lead": "Từ một điểm đăng nhập, người dùng tiếp cận chức năng theo nhóm công việc.",
+    "blocks": [
+      {
+        "type": "flow",
+        "steps": [
+          "Đăng nhập",
+          "Xác định vai trò",
+          "Hiển thị menu phù hợp",
+          "Thực hiện nghiệp vụ"
+        ]
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Nhóm menu",
+          "Màn hình",
+          "Vai trò trong quá trình sử dụng"
+        ],
+        "rows": [
+          [
+            "Tổng quan",
+            "Tổng quan; Bán hàng POS; Sản phẩm; Đơn hàng.",
+            "Theo dõi nhanh, bán hàng và tra cứu giao dịch."
+          ],
+          [
+            "Quản lý nghiệp vụ",
+            "Kho & kiểm kê; Nhập hàng; Nhà cung cấp; Khách hàng; Nhân viên & tài khoản; Đổi trả & hoàn tiền.",
+            "Quản lý hàng hóa, đối tác và hoạt động cửa hàng."
+          ],
+          [
+            "Quản trị",
+            "Báo cáo doanh thu; Chi nhánh; Cấu hình hệ thống.",
+            "Tổng hợp, thiết lập và đề xuất mở rộng."
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Khung màn hình chung"
+      },
+      {
+        "type": "bullets",
+        "items": [
+          "Thanh điều hướng bên trái: nhận diện ứng dụng, nhóm menu và tài khoản hiện tại.",
+          "Thanh trên cùng: tìm kiếm toàn hệ thống, thông báo và thông tin người dùng.",
+          "Vùng nội dung: tên màn hình, mô tả ngắn, nút hành động chính, thống kê và dữ liệu chi tiết.",
+          "Hộp thoại: thêm/sửa hồ sơ, thanh toán, xem hóa đơn, nhập hàng và xử lý yêu cầu."
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Các đường đi phục vụ nghiệp vụ"
+      },
+      {
+        "type": "flow",
+        "steps": [
+          "POS",
+          "Chọn khách + sản phẩm",
+          "Thanh toán",
+          "Xem / in hóa đơn"
+        ]
+      },
+      {
+        "type": "flow",
+        "steps": [
+          "Nhập hàng",
+          "Chọn hàng sắp hết",
+          "Lập phiếu chờ nhận",
+          "Xác nhận nhập kho"
+        ]
+      },
+      {
+        "type": "flow",
+        "steps": [
+          "Đơn hàng",
+          "Tra cứu hóa đơn",
+          "Yêu cầu trả",
+          "Quản trị phê duyệt"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Tìm kiếm toàn hệ thống rút ngắn việc di chuyển tới màn hình, sản phẩm hoặc hóa đơn. Hành động bị giới hạn theo quyền; đóng hộp thoại giữ người dùng ở ngữ cảnh đang làm việc."
+      }
+    ]
+  },
+  {
+    "code": "05",
+    "title": "Hệ thống thị giác và bố cục",
+    "lead": "Một hệ màu và các thành phần dùng chung giúp người dùng nhận biết trạng thái nhanh hơn.",
+    "blocks": [
+      {
+        "type": "palette",
+        "items": [
+          [
+            "#17243D",
+            "Thanh menu"
+          ],
+          [
+            "#615BD4",
+            "Hành động chính"
+          ],
+          [
+            "#189E91",
+            "Thanh toán"
+          ],
+          [
+            "#F4F6FB",
+            "Nền nội dung"
+          ],
+          [
+            "#202C43",
+            "Chữ chính"
+          ]
+        ]
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Thành phần",
+          "Quy tắc thể hiện",
+          "Mục đích"
+        ],
+        "rows": [
+          [
+            "Chữ và phân cấp",
+            "Be Vietnam Pro, dự phòng Arial; tiêu đề trang lớn hơn tên khối và nội dung; tiền dùng chữ số có bề rộng ổn định.",
+            "Ưu tiên tên màn hình, tổng tiền và dữ liệu quan trọng."
+          ],
+          [
+            "Nút và biểu tượng",
+            "Nút chính màu tím; xác nhận thanh toán màu xanh ngọc; thao tác rủi ro có nhãn và màu cảnh báo.",
+            "Giảm thời gian tìm hành động và phân biệt tác vụ."
+          ],
+          [
+            "Trạng thái",
+            "Nhãn có chữ kèm màu: đã thanh toán, chờ nhận, đã hủy, chờ duyệt.",
+            "Không buộc người dùng chỉ dựa vào màu."
+          ],
+          [
+            "Bảng và biểu mẫu",
+            "Bảng có tiêu đề cột; vùng lọc đặt trước bảng; ô nhập có nhãn, ràng buộc và thông báo lỗi.",
+            "Thuận theo trình tự tìm → đọc → thao tác."
+          ],
+          [
+            "Điện thoại",
+            "Menu chuyển sang dạng mở/đóng; POS xếp khối dọc; bảng rộng có vùng cuộn ngang.",
+            "Giữ khả năng sử dụng khi màn hình hẹp."
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Khả năng tiếp cận được hỗ trợ"
+      },
+      {
+        "type": "bullets",
+        "items": [
+          "Có dấu hiệu focus bàn phím; nhãn cho ô nhập; hộp thoại native; vùng thông báo và gợi ý số điện thoại có thuộc tính ARIA.",
+          "Tìm khách hỗ trợ phím lên/xuống, Enter và Escape; thao tác thông thường dùng được bằng chuột.",
+          "Nên tiếp tục đánh giá cỡ chữ nhỏ trong bảng, độ tương phản và vùng chạm trên điện thoại trước khi triển khai thực tế."
+        ]
+      },
+      {
+        "type": "note",
+        "title": "Mức đánh giá",
+        "text": "Báo cáo ghi nhận thiết kế và kiểm tra chức năng hiện có; chưa thực hiện đánh giá người dùng diện rộng hoặc chứng nhận tuân thủ WCAG."
+      }
+    ]
+  },
+  {
+    "code": "06",
+    "title": "Thiết kế nhập liệu và kết xuất",
+    "lead": "Đặc tả D1/D2 theo góc nhìn trao đổi giữa người dùng và hệ thống [1, tr. 4].",
+    "blocks": [
+      {
+        "type": "table",
+        "headers": [
+          "Nghiệp vụ",
+          "D1 — dữ liệu người dùng đưa vào",
+          "D2 — kết quả hiển thị"
+        ],
+        "rows": [
+          [
+            "Bán hàng",
+            "Sản phẩm, số lượng, khách hàng, giảm giá và ghi chú.",
+            "Giỏ hàng, tạm tính, thuế và tổng thanh toán."
+          ],
+          [
+            "Thanh toán",
+            "Phương thức; tiền mặt khách đưa hoặc mã tham chiếu kèm xác nhận.",
+            "Số tiền thừa, kết quả giao dịch và hóa đơn đã lưu."
+          ],
+          [
+            "Trả hàng",
+            "Mã hóa đơn, mặt hàng, số lượng, lý do và điều kiện nhập lại.",
+            "Số lượng khả dụng, trạng thái yêu cầu và tiền hoàn sau duyệt."
+          ],
+          [
+            "Nhập hàng",
+            "Đối tác, danh sách sản phẩm, số lượng, giá nhập và trạng thái phiếu.",
+            "Phiếu nhập, tổng giá trị và tồn kho sau khi xác nhận nhận hàng."
+          ],
+          [
+            "Tra cứu/báo cáo",
+            "Từ khóa, trạng thái, ngày hoặc kỳ báo cáo.",
+            "Danh sách kết quả, số tổng hợp, biểu đồ và tệp xuất."
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Chuẩn nhập và kiểm tra"
+      },
+      {
+        "type": "bullets",
+        "items": [
+          "Tiền và số lượng là số nguyên; không chấp nhận giá trị âm; số lượng mua không vượt tồn kho.",
+          "Chọn dữ liệu liên quan đã tồn tại: nhà cung cấp quyết định danh sách sản phẩm nhập; khách được tìm theo số điện thoại.",
+          "Tổng tiền, thuế, tiền trả lại và số lượng nhập gợi ý được tính tự động; người dùng chỉ nhập các giá trị cần quyết định.",
+          "Trùng mã vạch, số điện thoại khách và tên đăng nhập bị chặn khi thêm/sửa danh mục."
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Các dạng kết xuất"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Dạng xuất",
+          "Nội dung",
+          "Người sử dụng"
+        ],
+        "rows": [
+          [
+            "Màn hình",
+            "Bảng, nhãn trạng thái, thống kê và biểu đồ.",
+            "Người vận hành cửa hàng."
+          ],
+          [
+            "Hóa đơn HTML / in / PDF",
+            "Thông tin cửa hàng, hàng bán, số tiền và phương thức.",
+            "Thu ngân và khách mua."
+          ],
+          [
+            "CSV / JSON",
+            "CSV phục vụ xem dữ liệu; JSON phục vụ sao lưu và khôi phục.",
+            "Người quản lý có quyền tương ứng."
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "code": "07",
+    "title": "Thiết kế đối thoại và phản hồi",
+    "lead": "Trình tự tự nhiên, phản hồi rõ ràng và kiểm soát lỗi là trọng tâm của các luồng thao tác.",
+    "blocks": [
+      {
+        "type": "heading",
+        "text": "Luồng bán hàng"
+      },
+      {
+        "type": "flow",
+        "steps": [
+          "Tìm/chọn hàng",
+          "Kiểm tra giỏ",
+          "Chọn phương thức",
+          "Xác nhận nhận tiền",
+          "Lưu hóa đơn"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Chỉ trừ kho khi thanh toán hoàn tất. Nếu chưa đủ tiền mặt, vượt tồn hoặc chưa xác nhận nhận tiền chuyển khoản/thẻ, ứng dụng báo lỗi và giữ giỏ để sửa."
+      },
+      {
+        "type": "heading",
+        "text": "Luồng nhập kho"
+      },
+      {
+        "type": "flow",
+        "steps": [
+          "Gợi ý hàng tồn thấp",
+          "Lập nháp / chờ nhận",
+          "Kiểm tra hàng thực tế",
+          "Xác nhận nhập kho"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Lưu phiếu chưa làm tăng tồn kho. Tách “lập phiếu” khỏi “nhận hàng” giúp trạng thái trên giao diện phản ánh đúng công việc thực tế."
+      },
+      {
+        "type": "heading",
+        "text": "Luồng trả hàng"
+      },
+      {
+        "type": "flow",
+        "steps": [
+          "Tìm hóa đơn gốc",
+          "Chọn số lượng trả",
+          "Gửi yêu cầu",
+          "Duyệt / từ chối",
+          "Cập nhật tiền và kho"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Yêu cầu chờ duyệt giữ chỗ số lượng trả để tránh tạo trùng. Quản trị viên xác nhận đã hoàn tiền; chỉ hàng đủ điều kiện mới được nhập lại kho."
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Tình huống",
+          "Phản hồi được thiết kế"
+        ],
+        "rows": [
+          [
+            "Thao tác thành công",
+            "Thông báo ngắn và cập nhật danh sách, số lượng hoặc trạng thái."
+          ],
+          [
+            "Nhập sai / thiếu",
+            "Thông báo lỗi gần biểu mẫu hoặc qua thông báo; cho sửa dữ liệu."
+          ],
+          [
+            "Hủy phiếu, xóa đơn tạm, hoàn tiền",
+            "Hộp thoại xác nhận nêu tác động trước khi thực hiện."
+          ],
+          [
+            "Dữ liệu thay đổi ở tab khác",
+            "Cảnh báo và ngăn tab cũ ghi đè; yêu cầu tải lại."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Các bước trên là đặc tả xử lý sự kiện của giao diện. Chuyển khoản, thẻ và hoàn tiền hiện là xác nhận thủ công, không phải thông báo tự động từ ngân hàng."
+      }
+    ]
+  },
+  {
+    "code": "GD01",
+    "title": "Đăng nhập hệ thống",
+    "lead": "Tạo điểm vào rõ ràng và xác định vai trò trước khi hiển thị chức năng.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "dang-nhap",
+        "caption": "Hình 1. Màn hình đăng nhập với khối giới thiệu và biểu mẫu.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Thành phần / sự kiện",
+          "Đầu vào",
+          "Kết quả hoặc ràng buộc"
+        ],
+        "rows": [
+          [
+            "Tên đăng nhập; mật khẩu/PIN",
+            "Hai ô nhập có nhãn; mật khẩu được che.",
+            "Phải có dữ liệu và khớp tài khoản đang hoạt động."
+          ],
+          [
+            "Đăng nhập / Enter",
+            "Gửi biểu mẫu.",
+            "Xác định vai trò; mở tổng quan, POS hoặc sản phẩm."
+          ],
+          [
+            "Tài khoản sai / bị khóa",
+            "Thông tin không hợp lệ.",
+            "Báo lỗi, giữ biểu mẫu để sửa."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Khối trái giới thiệu giá trị sử dụng; khối phải ưu tiên biểu mẫu. Tài khoản mẫu được công khai để trình diễn. Phiên được giữ trong tab; đăng xuất đưa người dùng về màn hình này."
+      },
+      {
+        "type": "note",
+        "title": "Hiện trạng",
+        "text": "Kiểm tra tài khoản trong dữ liệu trình duyệt; chưa có khôi phục mật khẩu hay xác thực máy chủ."
+      }
+    ]
+  },
+  {
+    "code": "GD02",
+    "title": "Tổng quan cửa hàng",
+    "lead": "Giúp quản trị viên nhận biết nhanh doanh thu, đơn bán và công việc cần xử lý.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "tong-quan",
+        "caption": "Hình 2. Thẻ thống kê, xu hướng doanh thu và danh sách cần chú ý.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Khu vực",
+          "Thông tin hiển thị",
+          "Tương tác"
+        ],
+        "rows": [
+          [
+            "Thẻ tổng hợp",
+            "Doanh thu hôm nay, số đơn, mặt hàng đang bán và tồn thấp.",
+            "Đọc nhanh tình hình trong ngày."
+          ],
+          [
+            "Biểu đồ",
+            "Xu hướng doanh thu gộp; cơ cấu thanh toán hôm nay.",
+            "Đổi khoảng 7/30 ngày của xu hướng."
+          ],
+          [
+            "Đơn gần đây / cần chú ý",
+            "Hóa đơn mới; sản phẩm dưới ngưỡng; phiếu nhập và phiếu trả cần xử lý.",
+            "Mở chi tiết đơn hoặc phân hệ liên quan."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Thứ tự từ tổng hợp tới chi tiết giúp người quản lý quyết định bước tiếp theo. Nhãn nêu rõ kỳ và ý nghĩa chỉ số; doanh thu hôm nay có trừ tiền hoàn được xử lý trong ngày, biểu đồ dùng doanh thu gộp."
+      }
+    ]
+  },
+  {
+    "code": "GD03",
+    "title": "Bán hàng tại quầy — POS",
+    "lead": "Tách vùng chọn hàng và vùng hóa đơn để thu ngân theo dõi liên tục.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "ban-hang-pos",
+        "caption": "Hình 3. POS có danh mục, thẻ sản phẩm, khách mua và giỏ hàng.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Điều khiển",
+          "Biến cố",
+          "Xử lý / phản hồi"
+        ],
+        "rows": [
+          [
+            "Từ khóa / danh mục / quét mã",
+            "Nhập, chọn hoặc quét mã USB.",
+            "Lọc hàng; mã hợp lệ thêm sản phẩm vào giỏ."
+          ],
+          [
+            "Thẻ sản phẩm; nút +/−; bỏ dòng",
+            "Nhấn để thay đổi số lượng.",
+            "Cập nhật giỏ và tổng; chặn vượt tồn; hết hàng không bán."
+          ],
+          [
+            "Lưu đơn / Thanh toán",
+            "Tạm dừng hoặc kết thúc bán hàng.",
+            "Lưu tối đa 5 đơn tạm; mở hộp thoại khi giỏ có hàng."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Giỏ có giảm giá theo số tiền, thuế cấu hình, ghi chú và khách hàng. Đơn tạm lưu cả thông tin liên quan; khi mở lại phải xử lý giỏ đang có hàng trước. Phím F2 mở POS, F4 lưu đơn, F8 mở thanh toán."
+      }
+    ]
+  },
+  {
+    "code": "GD03.1",
+    "title": "Tìm khách theo số điện thoại",
+    "lead": "Gợi ý động thay thế danh sách kéo dài, giúp chọn đúng khách ngay khi bán.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "tim-khach-dien-thoai",
+        "caption": "Hình 4. Gợi ý số điện thoại đặt ngay bên dưới ô nhập.",
+        "portrait": true
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Thao tác",
+          "Đáp ứng của giao diện"
+        ],
+        "rows": [
+          [
+            "Nhập “09”, sau đó “090”, “0903”…",
+            "Lọc các khách đang hoạt động có số điện thoại bắt đầu bằng chuỗi đã nhập; kết quả thu hẹp ngay."
+          ],
+          [
+            "Chuỗi không còn khớp",
+            "Ẩn và xóa gợi ý cũ; hiển thị thông tin không tìm thấy khách."
+          ],
+          [
+            "Chọn khách bằng chuột hoặc mũi tên/Enter",
+            "Gắn khách vào hóa đơn, hiện tên/số điện thoại và đóng gợi ý."
+          ],
+          [
+            "Sửa số sau khi chọn; hoặc bấm bỏ chọn",
+            "Sửa số khác sẽ bỏ khách cũ ngay; bỏ chọn đưa đơn về khách lẻ."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Gợi ý hiển thị tối đa 8 khách để tránh che quá nhiều nội dung; nếu còn kết quả, yêu cầu nhập tiếp. Không tự gắn khách chỉ vì đã gõ gần đúng. Số điện thoại được so khớp sau khi bỏ ký tự định dạng."
+      }
+    ]
+  },
+  {
+    "code": "GD03.2",
+    "title": "Thanh toán bằng tiền mặt",
+    "lead": "Ưu tiên tổng phải thu, tiền khách đưa và số tiền cần trả lại.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "thanh-toan-tien-mat",
+        "caption": "Hình 5. Hộp thoại thanh toán tiền mặt, có mệnh giá và bàn phím số.",
+        "portrait": true
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Thành phần",
+          "Quy tắc xử lý"
+        ],
+        "rows": [
+          [
+            "Tổng thanh toán",
+            "Lấy từ giỏ sau giảm giá và thuế; hiển thị nổi bật."
+          ],
+          [
+            "Tiền khách đưa",
+            "Số nguyên không âm; có nút mệnh giá nhanh và “Đủ tiền”."
+          ],
+          [
+            "Tiền trả lại",
+            "Tự tính phần chênh dương giữa tiền khách đưa và tổng phải thu."
+          ],
+          [
+            "Xác nhận thanh toán",
+            "Chặn nếu chưa đủ tiền; thành công thì lưu hóa đơn và trừ tồn kho một lần."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Ví dụ minh họa: hóa đơn 149.500 ₫, khách đưa 200.000 ₫, tiền trả lại 50.500 ₫. Các phương thức dùng chung một tổng tiền để tránh nhầm khi chuyển thẻ lựa chọn."
+      }
+    ]
+  },
+  {
+    "code": "GD03.3",
+    "title": "Thanh toán chuyển khoản và thẻ",
+    "lead": "Hai cách ghi nhận thanh toán không dùng tiền mặt trong cùng một hộp thoại.",
+    "blocks": [
+      {
+        "type": "figurePair",
+        "figures": [
+          [
+            "thanh-toan-chuyen-khoan",
+            "Hình 6a. Chuyển khoản."
+          ],
+          [
+            "thanh-toan-the",
+            "Hình 6b. Thẻ ngân hàng."
+          ]
+        ]
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Phương thức",
+          "Dữ liệu người dùng nhập",
+          "Điều kiện xác nhận"
+        ],
+        "rows": [
+          [
+            "Chuyển khoản",
+            "Mã tham chiếu; đánh dấu đã nhận đủ tiền.",
+            "Đối chiếu thông tin ngân hàng/tài khoản hiển thị và giao dịch thực nhận."
+          ],
+          [
+            "Thẻ ngân hàng",
+            "Mã tham chiếu trên biên lai máy POS; đánh dấu đã nhận đủ.",
+            "Thực hiện giao dịch thẻ ngoài ứng dụng trước khi ghi nhận."
+          ]
+        ]
+      },
+      {
+        "type": "bullets",
+        "items": [
+          "Chuyển phương thức làm thay đổi các trường cần nhập, không thay đổi giỏ và tổng phải thu.",
+          "Mã tham chiếu và phương thức được lưu trên hóa đơn để tra cứu lại."
+        ]
+      },
+      {
+        "type": "note",
+        "title": "Ranh giới chức năng",
+        "text": "Thông tin tài khoản trong ảnh là dữ liệu mẫu. Ứng dụng chưa tạo QR ngân hàng, chưa kết nối cổng thanh toán, chưa tự xác minh nhận tiền hoặc tự hoàn tiền."
+      }
+    ]
+  },
+  {
+    "code": "GD04",
+    "title": "Lịch sử đơn hàng",
+    "lead": "Tìm lại giao dịch đã hoàn tất và truy cập hóa đơn, phương thức thanh toán, trạng thái hoàn trả.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "lich-su-don",
+        "caption": "Hình 7. Bộ lọc và bảng lịch sử đơn hàng.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Điều khiển",
+          "Đầu vào / sự kiện",
+          "Kết quả"
+        ],
+        "rows": [
+          [
+            "Ô tìm kiếm",
+            "Mã đơn, tên khách hoặc thu ngân.",
+            "Danh sách phù hợp với từ khóa, hỗ trợ tìm không dấu."
+          ],
+          [
+            "Trạng thái / thanh toán / ngày",
+            "Chọn bộ lọc và khoảng từ–đến.",
+            "Các điều kiện kết hợp để thu hẹp kết quả."
+          ],
+          [
+            "Xem / phân trang / CSV",
+            "Mở đơn, chuyển trang hoặc xuất.",
+            "Chi tiết hóa đơn; 10 kết quả/trang; tệp danh sách đơn."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Các nhãn “Đã thanh toán”, “Đã trả một phần”, “Đã hoàn trả” giúp phân biệt lịch sử giao dịch. Giá trị hóa đơn gốc vẫn giữ lại; số tiền đã hoàn được giải thích ở chi tiết, không sửa mất chứng từ ban đầu."
+      },
+      {
+        "type": "note",
+        "title": "Phạm vi xuất",
+        "text": "Bộ lọc áp dụng cho danh sách đang xem. Nút xuất CSV đơn hàng hiện xuất danh sách đơn được lưu, không giới hạn theo bộ lọc màn hình."
+      }
+    ]
+  },
+  {
+    "code": "GD04.1",
+    "title": "Hóa đơn và thiết kế kết xuất",
+    "lead": "Một cấu trúc kết xuất dùng cho xem trên màn hình, tải HTML và in/lưu PDF.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "hoa-don",
+        "caption": "Hình 8. Hóa đơn bán hàng giữ thông tin tại thời điểm thanh toán.",
+        "portrait": true
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Nhóm thông tin",
+          "Nội dung"
+        ],
+        "rows": [
+          [
+            "Đầu hóa đơn",
+            "Tên, địa chỉ, điện thoại cửa hàng; mã và thời gian giao dịch."
+          ],
+          [
+            "Giao dịch / hàng hóa",
+            "Khách, thu ngân, phương thức; tên hàng, số lượng, đơn giá và thành tiền."
+          ],
+          [
+            "Tổng kết",
+            "Tạm tính, giảm giá, thuế, tổng phải thu, tiền đã nhận và tiền trả lại."
+          ],
+          [
+            "Sau bán hàng",
+            "Ghi chú; lịch sử trả hàng; tiền đã hoàn và giá trị còn lại khi phát sinh."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Ảnh chụp mô tả đơn gồm sữa, mì và cà phê, tổng 149.500 ₫. Tên/giá hàng và cấu hình cửa hàng được chụp lại trong dữ liệu hóa đơn để thay đổi danh mục sau này không làm đổi nội dung chứng từ cũ."
+      },
+      {
+        "type": "note",
+        "title": "Phạm vi kết xuất",
+        "text": "“In / Lưu PDF” mở hộp thoại in của trình duyệt; chọn máy in hoặc lưu PDF. Đây là hóa đơn nội bộ, chưa phải dịch vụ hóa đơn điện tử."
+      }
+    ]
+  },
+  {
+    "code": "GD05",
+    "title": "Quản lý sản phẩm",
+    "lead": "Cho phép quản trị danh mục và cung cấp thông tin hàng hóa dùng chung cho bán hàng, kho và nhập hàng.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "san-pham",
+        "caption": "Hình 9. Danh mục sản phẩm với giá, tồn và trạng thái bán.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Nhóm điều khiển",
+          "Thông tin và xử lý"
+        ],
+        "rows": [
+          [
+            "Tra cứu",
+            "Tên, mã sản phẩm, mã vạch; lọc danh mục/trạng thái; phân trang."
+          ],
+          [
+            "Biểu mẫu thêm/sửa",
+            "Tên, mã vạch, biểu tượng, danh mục, nhà cung cấp, giá bán/vốn và ngưỡng tồn thấp."
+          ],
+          [
+            "Kiểm tra",
+            "Mã vạch duy nhất; giá và ngưỡng là số nguyên không âm; chọn nhà cung cấp."
+          ],
+          [
+            "Trạng thái",
+            "Cho ngừng bán để giữ lịch sử; tồn đầu kỳ chỉ nhập khi tạo mới."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Quản trị có quyền thêm/sửa, nhân viên kho chỉ xem. Sửa tồn của mặt hàng đã có được thực hiện qua kiểm kê hoặc nhập hàng, không đổi trực tiếp tại biểu mẫu sản phẩm. Chức năng CSV phục vụ tổng hợp danh mục."
+      }
+    ]
+  },
+  {
+    "code": "GD06",
+    "title": "Kho hàng và kiểm kê",
+    "lead": "Tách số lượng hiện có, lịch sử biến động và biên bản kiểm kê để dễ đối chiếu.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "kho-kiem-ke",
+        "caption": "Hình 10. Tồn kho, giá trị tồn và các thẻ lịch sử/kiểm kê.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Thẻ / thao tác",
+          "Thông tin và phản hồi"
+        ],
+        "rows": [
+          [
+            "Tồn kho",
+            "Sản phẩm, mã, tồn hiện tại, ngưỡng tối thiểu, giá vốn và giá trị tồn; lọc tồn thấp."
+          ],
+          [
+            "Lịch sử xuất nhập",
+            "Thời gian, mức tăng/giảm, tồn sau, nghiệp vụ, chứng từ và người thực hiện."
+          ],
+          [
+            "Tạo phiếu kiểm kê",
+            "Chọn hàng, nhập số thực đếm và lý do; xác nhận để cập nhật tồn."
+          ],
+          [
+            "Phiếu kiểm kê",
+            "Lưu số trước, thực tế, chênh lệch, lý do và người lập để kiểm tra lại."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Sản phẩm bằng hoặc dưới ngưỡng được đánh dấu cần nhập thêm. Kiểm kê chỉ nhận số nguyên không âm. Khi thay đổi tồn, hệ thống giữ dấu vết nghiệp vụ thay vì chỉ hiển thị một số lượng mới không có lý do."
+      }
+    ]
+  },
+  {
+    "code": "GD07",
+    "title": "Nhập hàng và gợi ý tồn thấp",
+    "lead": "Đưa việc bổ sung hàng hóa ngay tới nơi lập phiếu, giảm bước tìm sản phẩm cần nhập.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "nhap-hang-goi-y",
+        "caption": "Hình 11. Gợi ý các mặt hàng sắp hết ở đầu màn hình nhập hàng.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Thành phần",
+          "Thông tin hoặc hành động"
+        ],
+        "rows": [
+          [
+            "Thẻ gợi ý",
+            "Tên hàng, đối tác, tồn hiện tại, ngưỡng tối thiểu, lượng đang chờ nhận và lượng cần bổ sung."
+          ],
+          [
+            "Nhập mặt hàng này",
+            "Mở phiếu đúng nhà cung cấp, thêm sẵn dòng hàng và số lượng gợi ý; chưa thay đổi kho."
+          ],
+          [
+            "Danh sách phiếu nhập",
+            "Tra mã/đối tác, lọc trạng thái; mở chi tiết nháp/chờ nhận/đã nhận/đã hủy."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Cách tính gợi ý: max(0, max(1, 2 × ngưỡng tối thiểu) − tồn hiện tại − số lượng đang chờ nhận). Ví dụ dầu ăn còn 12, ngưỡng 15, chưa có phiếu chờ: gợi ý nhập 18 để hướng tới tồn 30."
+      },
+      {
+        "type": "note",
+        "title": "Kiểm soát người dùng",
+        "text": "Gợi ý là hỗ trợ quyết định, không tự đặt hàng. Người dùng được chỉnh lượng/giá trước khi lưu. Đối tác ngừng hoạt động không được lập phiếu mới."
+      }
+    ]
+  },
+  {
+    "code": "GD07.1",
+    "title": "Lập phiếu nhập hàng",
+    "lead": "Chọn đối tác trước, sau đó chọn hoặc thêm nhanh các mặt hàng của đối tác đó.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "phieu-nhap",
+        "caption": "Hình 12. Phiếu nhập có gợi ý theo đối tác và dòng hàng sửa được.",
+        "portrait": true
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Biến cố",
+          "Xử lý của hệ thống"
+        ],
+        "rows": [
+          [
+            "Đổi nhà cung cấp",
+            "Lọc lại sản phẩm; xóa các dòng cũ không phù hợp để không trộn đối tác."
+          ],
+          [
+            "Chọn gợi ý / thêm mặt hàng",
+            "Thêm dòng theo đúng đối tác; ngăn trùng dòng; gợi ý đã chọn chuyển “Đã thêm”."
+          ],
+          [
+            "Sửa số lượng/đơn giá",
+            "Kiểm tra số nguyên hợp lệ, cập nhật tổng phiếu; số lượng phải lớn hơn 0."
+          ],
+          [
+            "Lưu nháp / chờ nhận / nhận kho",
+            "Nháp và chờ nhận chưa cộng tồn; xác nhận nhận hàng mới cộng kho và cập nhật giá vốn."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Phân tách dữ liệu chọn mặt hàng và bảng chi tiết cho phép lập phiếu nhiều dòng. Xác nhận nhận đủ hàng là một bước riêng và chỉ thực hiện được một lần; phiếu đã nhập không thể hủy theo thao tác của phiếu chưa nhận."
+      }
+    ]
+  },
+  {
+    "code": "GD08",
+    "title": "Nhà cung cấp",
+    "lead": "Lưu thông tin đối tác, nhóm hàng và vùng phục vụ để hỗ trợ nhập hàng và đề xuất chi nhánh.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "nha-cung-cap",
+        "caption": "Hình 13. Danh sách đối tác cung ứng và trạng thái hợp tác.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Nội dung",
+          "Đặc tả"
+        ],
+        "rows": [
+          [
+            "Danh sách",
+            "Mã, tên đối tác, nhóm cung cấp, điện thoại, vùng cung ứng và trạng thái."
+          ],
+          [
+            "Thêm / sửa",
+            "Nhập hồ sơ liên hệ và vùng phục vụ; thông tin có nhãn rõ ràng."
+          ],
+          [
+            "Lịch sử nhập",
+            "Mở các phiếu của đúng đối tác để xem ngày, giá trị và trạng thái."
+          ],
+          [
+            "Ngừng hợp tác",
+            "Giữ hồ sơ/lịch sử; chặn lập hoặc xác nhận phiếu mới với đối tác không hoạt động."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Mối liên hệ đối tác–sản phẩm được sử dụng trực tiếp ở phiếu nhập. Vùng cung ứng là dữ liệu để kiểm tra đề xuất mở chi nhánh; hiện cách kiểm tra dựa trên chuỗi địa danh, chưa phải bản đồ hoặc định vị."
+      }
+    ]
+  },
+  {
+    "code": "GD09",
+    "title": "Khách hàng",
+    "lead": "Quản lý hồ sơ và lịch sử mua trong một danh mục riêng, liên kết với tra cứu nhanh ở POS.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "khach-hang",
+        "caption": "Hình 14. Hồ sơ khách hàng, số đơn và tổng giá trị mua ròng.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Thao tác",
+          "Dữ liệu và phản hồi"
+        ],
+        "rows": [
+          [
+            "Tìm khách",
+            "Tên, mã hoặc số điện thoại; phân trang danh sách kết quả."
+          ],
+          [
+            "Thêm / sửa hồ sơ",
+            "Họ tên, điện thoại, email và trạng thái hoạt động."
+          ],
+          [
+            "Kiểm tra số điện thoại",
+            "Không để trống/sai định dạng đã quy định; chặn trùng sau khi bỏ ký tự định dạng."
+          ],
+          [
+            "Lịch sử mua",
+            "Đơn của khách; tổng mua trừ các phiếu hoàn đã được duyệt."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Thu ngân được quản lý hồ sơ phục vụ bán hàng. POS không buộc chọn khách từ danh sách dài: sử dụng ô tìm số điện thoại; khách chưa có hồ sơ có thể thêm mới, hoặc tiếp tục bán cho khách lẻ."
+      }
+    ]
+  },
+  {
+    "code": "GD10",
+    "title": "Nhân viên và tài khoản",
+    "lead": "Giao diện quản trị quyền truy cập và tình trạng tài khoản, không trộn với danh mục khách hàng.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "nhan-vien",
+        "caption": "Hình 15. Danh sách nhân viên và nút cập nhật phân quyền.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Thành phần",
+          "Đặc tả và ràng buộc"
+        ],
+        "rows": [
+          [
+            "Hồ sơ",
+            "Tên nhân viên, tên đăng nhập, vai trò và trạng thái làm việc."
+          ],
+          [
+            "Mật khẩu / vai trò",
+            "Mật khẩu mới tối thiểu 6 ký tự; chọn quản trị, thu ngân hoặc nhân viên kho."
+          ],
+          [
+            "Tên đăng nhập",
+            "Duy nhất, gồm các ký tự cho phép; không có khoảng trắng."
+          ],
+          [
+            "Khóa / hạ quyền",
+            "Không khóa/hạ quyền quản trị đang dùng; phải còn quản trị viên hoạt động."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Chỉ quản trị nhìn thấy phân hệ nhân sự. Vai trò được thể hiện bằng nhãn để người quản lý kiểm tra nhanh. Khi cập nhật hồ sơ mà không nhập mật khẩu mới, hệ thống giữ mật khẩu hiện có."
+      },
+      {
+        "type": "note",
+        "title": "Bảo mật khi phát triển tiếp",
+        "text": "Tài khoản mẫu lưu trong localStorage. Trước vận hành thật cần chuyển đăng nhập, lưu mật khẩu băm và kiểm tra quyền sang máy chủ."
+      }
+    ]
+  },
+  {
+    "code": "GD11",
+    "title": "Tiếp nhận đổi trả và hoàn tiền",
+    "lead": "Gắn yêu cầu trả hàng với hóa đơn gốc và giới hạn theo số lượng mua còn khả dụng.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "doi-tra-hoan-tien",
+        "caption": "Hình 16. Danh sách yêu cầu trả hàng với trạng thái chờ phê duyệt.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Thao tác",
+          "Nội dung và điều kiện"
+        ],
+        "rows": [
+          [
+            "Tra hóa đơn gốc",
+            "Chỉ hóa đơn đã thanh toán và còn sản phẩm có thể trả."
+          ],
+          [
+            "Chọn số lượng từng hàng",
+            "Hiển thị đã mua/đã trả/có thể trả; số yêu cầu không vượt phần còn lại."
+          ],
+          [
+            "Lý do / chất lượng hàng",
+            "Lý do bắt buộc; xác định hàng còn bán được để nhập lại kho sau duyệt."
+          ],
+          [
+            "Gửi yêu cầu",
+            "Tạo trạng thái chờ duyệt; chưa ghi tiền hoàn và chưa cộng tồn."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Thu ngân tiếp nhận yêu cầu; quản trị quyết định kết quả. Yêu cầu chờ duyệt giữ chỗ số lượng trả để ngăn tạo nhiều yêu cầu cho cùng phần hàng. Đổi sang hàng khác được thực hiện bằng trả hàng cũ và lập đơn bán mới."
+      }
+    ]
+  },
+  {
+    "code": "GD11.1",
+    "title": "Phê duyệt yêu cầu và cập nhật kết quả",
+    "lead": "Nội dung hộp thoại cho người duyệt đối chiếu hàng, tiền và tác động trước khi xác nhận.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "duyet-hoan-tien",
+        "caption": "Hình 17. Chi tiết yêu cầu với số tiền dự kiến và các lựa chọn xử lý.",
+        "portrait": true
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Hành động",
+          "Kết quả và kiểm soát"
+        ],
+        "rows": [
+          [
+            "Xem hóa đơn gốc",
+            "Mở chứng từ để đối chiếu sản phẩm, đơn giá và lịch sử trả."
+          ],
+          [
+            "Từ chối",
+            "Đóng yêu cầu; không đổi tiền/tồn; giải phóng số lượng chờ trả."
+          ],
+          [
+            "Xác nhận đã hoàn tiền",
+            "Chỉ quản trị; cần xác nhận thêm; ghi số tiền, thời gian và người xử lý."
+          ],
+          [
+            "Cập nhật hàng trả",
+            "Tăng số đã trả trên đơn; cộng kho nếu đủ điều kiện; chặn xử lý lặp lại."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Tiền hoàn phân bổ từ giá trị thực trả của từng dòng, có xét giảm giá, thuế và số đã trả. Cách tính tích lũy xử lý phần lẻ để tổng tiền hoàn toàn bộ không vượt và khớp hóa đơn gốc. Ảnh minh họa trả 1 hộp sữa, dự kiến 36.000 ₫."
+      }
+    ]
+  },
+  {
+    "code": "GD12",
+    "title": "Báo cáo kinh doanh",
+    "lead": "Kết hợp số liệu tổng hợp, xu hướng và bảng chi tiết theo phương thức để hỗ trợ quyết định.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "bao-cao",
+        "caption": "Hình 18. Doanh thu gộp, hoàn tiền, thuần và cơ cấu theo phương thức.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Thành phần",
+          "Ý nghĩa và thao tác"
+        ],
+        "rows": [
+          [
+            "Kỳ báo cáo",
+            "Chọn hôm nay hoặc 7/30/90 ngày gần nhất."
+          ],
+          [
+            "Chỉ số tổng hợp",
+            "Thu gộp của hóa đơn trong kỳ; hoàn theo ngày xử lý; thuần bằng gộp trừ hoàn."
+          ],
+          [
+            "Biểu đồ / danh mục",
+            "Xu hướng doanh thu gộp và tối đa 6 danh mục bán chạy; không thay thế bảng số liệu."
+          ],
+          [
+            "Bảng / CSV",
+            "Số giao dịch, thu, hoàn và chênh lệch theo phương thức; xuất số liệu của kỳ báo cáo."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Theo hướng dẫn kết xuất [1, tr. 30–32], biểu đồ dùng để nhận biết xu hướng còn bảng dùng để đối chiếu số cụ thể. Với kỳ “Hôm nay”, biểu đồ vẫn thể hiện 7 ngày gần nhất để giữ ngữ cảnh; chỉ số và bảng tính theo kỳ đã chọn."
+      }
+    ]
+  },
+  {
+    "code": "GD13",
+    "title": "Chi nhánh và đề xuất mở rộng",
+    "lead": "Tách thông tin chi nhánh đang vận hành khỏi đề xuất địa chỉ mới.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "chi-nhanh",
+        "caption": "Hình 19. Thông tin chi nhánh chính và quy trình đề xuất địa chỉ.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Khu vực / thao tác",
+          "Đặc tả"
+        ],
+        "rows": [
+          [
+            "Chi nhánh hiện tại",
+            "Tên cửa hàng, địa chỉ, kho chính và số đối tác đang hỗ trợ."
+          ],
+          [
+            "Đề xuất chi nhánh",
+            "Nhập tên, địa chỉ và vùng phục vụ."
+          ],
+          [
+            "Kiểm tra vùng",
+            "Tìm nhà cung cấp hoạt động có vùng cung ứng phù hợp chuỗi địa danh."
+          ],
+          [
+            "Lưu đề xuất",
+            "Có đối tác phù hợp thì lưu và hiện trong danh sách; nếu không thì báo lỗi để bổ sung."
+          ]
+        ]
+      },
+      {
+        "type": "note",
+        "title": "Phạm vi hiện có",
+        "text": "Chức năng mới ở mức đề xuất chi nhánh. Giao diện chưa có chuyển chi nhánh, kho độc lập, chuyển kho hoặc hợp nhất số liệu nhiều cửa hàng."
+      }
+    ]
+  },
+  {
+    "code": "GD14",
+    "title": "Cấu hình, sao lưu và nhật ký",
+    "lead": "Tập trung các thiết lập ảnh hưởng toàn cửa hàng và công cụ giữ dữ liệu tại thiết bị.",
+    "blocks": [
+      {
+        "type": "figure",
+        "image": "cau-hinh",
+        "caption": "Hình 20. Thiết lập cửa hàng, thanh toán, quy tắc vận hành và sao lưu.",
+        "portrait": false
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Nhóm chức năng",
+          "Dữ liệu / phản hồi"
+        ],
+        "rows": [
+          [
+            "Thông tin cửa hàng",
+            "Tên, điện thoại, địa chỉ và lời nhắn hóa đơn; lưu cấu hình sau khi kiểm tra."
+          ],
+          [
+            "Thanh toán / thuế",
+            "Ngân hàng, số tài khoản, chủ tài khoản và thuế suất 0–100%."
+          ],
+          [
+            "Sao lưu / khôi phục",
+            "Tải JSON; kiểm tra tệp nhập; xác nhận trước khi thay toàn bộ dữ liệu."
+          ],
+          [
+            "Nhật ký thao tác",
+            "Tên thao tác, nội dung, thời gian và người thực hiện."
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Dữ liệu tại localStorage của đúng trình duyệt, địa chỉ và cổng. Không đồng bộ sang máy khác. Đăng xuất không xóa dữ liệu; xóa bộ nhớ trình duyệt cần bản sao lưu để phục hồi. Sao lưu chứa hồ sơ và tài khoản dùng thử, cần lưu riêng tư."
+      }
+    ]
+  },
+  {
+    "code": "08",
+    "title": "Đánh giá thiết kế và giới hạn",
+    "lead": "Đánh giá dựa trên kiểm thử chức năng đã thực hiện; tách kết quả xác minh khỏi mục tiêu cải tiến.",
+    "blocks": [
+      {
+        "type": "table",
+        "headers": [
+          "Tiêu chí",
+          "Bằng chứng / hiện trạng",
+          "Giới hạn còn lại"
+        ],
+        "rows": [
+          [
+            "Đúng đắn nghiệp vụ",
+            "Đã chạy 16 kiểm thử nghiệp vụ về tiền, kho, đơn tạm, trả hàng, quyền và lưu trữ.",
+            "Chưa kiểm thử ngân hàng hay backend vì chưa tích hợp."
+          ],
+          [
+            "Tiện dụng",
+            "Có gợi ý số điện thoại, gợi ý hàng cần nhập, dữ liệu mặc định và phím tắt.",
+            "Chưa khảo sát người dùng hoặc đo thời gian thao tác thực tế."
+          ],
+          [
+            "Tương tác và phản hồi",
+            "Kiểm thử Edge gồm 3 thanh toán, hóa đơn, trả hàng, nhập kho và các tính năng mới.",
+            "Cần bổ sung thử nghiệm trên các thiết bị/trình duyệt mục tiêu."
+          ],
+          [
+            "Responsive",
+            "Đã kiểm tra POS ở kích thước điện thoại, menu mở/đóng và không tràn chiều ngang trang.",
+            "Bảng rộng cần cuộn; vẫn cần tối ưu cỡ chữ và vùng chạm."
+          ],
+          [
+            "Tiến hóa",
+            "Tách giao diện, nghiệp vụ, sự kiện và CSS theo nhóm chức năng.",
+            "Chưa có API/database, tùy biến giao diện và Undo/Redo dùng chung."
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Các tình huống đã kiểm tra cho hai cải tiến gần nhất"
+      },
+      {
+        "type": "bullets",
+        "items": [
+          "Tìm số điện thoại thu hẹp theo tiền tố; không khớp thì ẩn; chọn bằng chuột/bàn phím; sửa số bỏ khách cũ; chọn khách được giữ sau tải lại.",
+          "Gợi ý nhập chọn đúng đối tác và mặt hàng; sửa số lượng; trừ lượng đang chờ nhận; không thêm trùng dòng; nhận đủ hàng thì mặt hàng không còn trong gợi ý tồn thấp."
+        ]
+      },
+      {
+        "type": "note",
+        "title": "Phạm vi xác minh của báo cáo",
+        "text": "Ảnh được chụp từ phiên dữ liệu mẫu riêng khi lập báo cáo, không dùng dữ liệu trình duyệt vận hành. Không ghi nhận lỗi JavaScript chưa xử lý trong quá trình chụp."
+      }
+    ]
+  },
+  {
+    "code": "09",
+    "title": "Kết luận, hướng hoàn thiện và tài liệu",
+    "lead": "Bộ giao diện đã hình thành chuỗi công việc liên tục từ bán hàng đến quản trị sau giao dịch.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Thiết kế RetailFlow áp dụng các nội dung trong bài giảng vào một hệ thống bán lẻ cụ thể: phân nhóm chức năng, chuẩn hóa nhập liệu, kết xuất hóa đơn/báo cáo và xác định rõ các bước đối thoại. Tìm khách theo số điện thoại và gợi ý nhập hàng giảm thao tác lựa chọn trong những nghiệp vụ lặp lại."
+      },
+      {
+        "type": "heading",
+        "text": "Hướng hoàn thiện"
+      },
+      {
+        "type": "bullets",
+        "items": [
+          "Bổ sung máy chủ, database và xác thực thực; bảo vệ tài khoản và phân quyền tại API.",
+          "Tích hợp nhận trạng thái thanh toán từ ngân hàng/máy POS và dịch vụ hóa đơn điện tử.",
+          "Khảo sát người sử dụng; cải thiện chữ nhỏ, độ tương phản, vùng chạm và hỗ trợ bàn phím trên mọi phân hệ.",
+          "Phát triển vận hành đa chi nhánh, nhập hàng từng phần và lịch sử xử lý có quy trình chặt chẽ hơn.",
+          "Bổ sung hướng dẫn theo ngữ cảnh và khả năng hoàn tác phù hợp từng nghiệp vụ, có kiểm soát chứng từ."
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Tài liệu tham khảo và nguồn đối chiếu"
+      },
+      {
+        "type": "p",
+        "text": "[1] “Thiết kế giao diện.pdf”, 58 trang, tài liệu bài giảng do người dùng cung cấp. Báo cáo vận dụng các phần: mục tiêu (tr. 4); chất lượng (tr. 17–22); hướng dẫn thiết kế (tr. 23–26); nhập/xuất (tr. 27–32); đối thoại (tr. 33–37); tra cứu (tr. 58)."
+      },
+      {
+        "type": "p",
+        "text": "[2] Mã nguồn RetailFlow, repository công khai https://github.com/nhatp0501-ctrl/cuahangbanle. Bản chức năng đối chiếu: commit 8cefad8 — bổ sung gợi ý nhập hàng và tìm khách theo số điện thoại."
+      },
+      {
+        "type": "p",
+        "text": "[3] Ảnh chụp giao diện từ ứng dụng đang chạy tại máy trong ngày 16/11/2026; dữ liệu minh họa được khởi tạo riêng. Kết quả kiểm thử nghiệp vụ và trình duyệt trong thư mục tests của dự án."
+      },
+      {
+        "type": "heading",
+        "text": "Tra cứu mã nguồn theo chủ đề"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Nhóm",
+          "Vị trí"
+        ],
+        "rows": [
+          [
+            "Giao diện và cải tiến",
+            "src/features/; customer-search.js; restock-suggestions.js."
+          ],
+          [
+            "Nghiệp vụ và sự kiện",
+            "src/domain/; src/events/actions/; src/events/inputs.js."
+          ],
+          [
+            "Bố cục / định dạng",
+            "src/layout/; src/shared/; assets/css/."
+          ],
+          [
+            "Kiểm thử",
+            "tests/store.test.js; tests/browser.cjs; tests/purchasing-customer.browser.cjs."
+          ]
+        ]
+      }
+    ]
+  }
+]

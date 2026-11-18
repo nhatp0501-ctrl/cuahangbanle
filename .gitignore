@@ -1,6 +1,5 @@
 node_modules/
 preview/
-bao-cao/
 *.log
 .env
 .env.*
