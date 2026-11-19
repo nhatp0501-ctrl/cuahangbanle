@@ -10,7 +10,7 @@ function settingsView() {
       ['shield', 'Phân quyền theo vai trò', 'Quản trị · Thu ngân · Kho'],
       ['receipt', 'Lưu hóa đơn thanh toán', 'Tự động ghi nhận sau thanh toán'],
       ['warehouse', 'Kiểm kê có biên bản', 'Lưu người thực hiện và lý do'],
-      ['return', 'Hoàn tiền cần phê duyệt', 'Giới hạn số lượng theo hóa đơn gốc'],
+      ['truck', 'Nhập hàng cần phê duyệt', 'Kho gửi yêu cầu, admin duyệt thực nhận'],
     ]
       .map(
         ([ico, title, desc]) =>
