@@ -1,0 +1,300 @@
+@page {
+  size: A4;
+  margin: 20mm 20mm 20mm 25mm;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  font-size: 13pt;
+}
+body {
+  margin: 0;
+  color: #182231;
+  background: #e6e9ef;
+  font-family: 'Times New Roman', serif;
+}
+.page {
+  width: 165mm;
+  height: 256mm;
+  position: relative;
+  margin: 12mm auto;
+  background: white;
+  padding: 0 0 10mm;
+  box-shadow: 0 3px 20px #23334a1c;
+  break-after: page;
+  page-break-after: always;
+}
+.page:last-child {
+  break-after: auto;
+  page-break-after: auto;
+}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0 3mm;
+  border-bottom: 1px solid #7e8998;
+  font-size: 8.5pt;
+  color: #586575;
+  margin-bottom: 4mm;
+}
+.page-header span:last-child {
+  text-transform: uppercase;
+}
+.eyebrow {
+  color: #4f5d70;
+  font-size: 9pt;
+  font-weight: bold;
+  margin: 0 0 1.5mm;
+}
+h1 {
+  font-size: 17pt;
+  line-height: 1.18;
+  margin: 0 0 2.5mm;
+  color: #182d4b;
+}
+.lead {
+  font-size: 11.5pt;
+  font-style: italic;
+  margin: 0 0 4mm;
+  color: #45576a;
+  line-height: 1.25;
+}
+.block {
+  margin: 0 0 3mm;
+}
+p.block {
+  text-align: justify;
+  line-height: 1.3;
+  text-indent: 6mm;
+  font-size: 13pt;
+}
+h2.block {
+  font-size: 13pt;
+  margin: 3mm 0 2mm;
+  line-height: 1.25;
+  color: #213b59;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  font-size: 10.6pt;
+  line-height: 1.22;
+}
+td,
+th {
+  border: 1px solid #aeb9c7;
+  padding: 1.8mm 2mm;
+  vertical-align: top;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+th {
+  font-weight: bold;
+  background: #e9eef6;
+  color: #192d47;
+}
+tbody tr:nth-child(even) {
+  background: #f7f9fc;
+}
+.table-caption {
+  text-align: center;
+  font-size: 10pt;
+  font-style: italic;
+  margin: 0 0 2mm;
+  line-height: 1.22;
+}
+.note {
+  border-left: 2px solid #586e8e;
+  background: #f0f3f8;
+  padding: 2.5mm 3mm;
+  font-size: 11.5pt;
+  line-height: 1.26;
+}
+.note strong {
+  display: block;
+  margin-bottom: 1mm;
+}
+.note p {
+  margin: 0;
+}
+ul.block {
+  padding-left: 5mm;
+  font-size: 12pt;
+  line-height: 1.3;
+}
+li {
+  padding-left: 1mm;
+  margin-bottom: 2mm;
+}
+figure {
+  margin: 0;
+  text-align: center;
+  break-inside: avoid;
+}
+figure img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 88mm;
+  margin: 0 auto;
+  border: 1px solid #ccd3dd;
+}
+figcaption {
+  margin: 1.5mm 0 0;
+  font-size: 9.7pt;
+  font-style: italic;
+  line-height: 1.2;
+  color: #3b4b60;
+}
+.figure-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3mm;
+  align-items: start;
+}
+.figure-pair img {
+  max-height: 92mm;
+}
+.flow {
+  display: flex;
+  gap: 1mm;
+  align-items: stretch;
+  margin: 3mm 0 4mm;
+}
+.flow-box {
+  flex: 1;
+  padding: 3mm 1.5mm;
+  border: 1px solid #8292aa;
+  background: #eef2f8;
+  font-size: 10.5pt;
+  text-align: center;
+  line-height: 1.2;
+}
+.flow-arrow {
+  align-self: center;
+  color: #536a89;
+  font-size: 14pt;
+}
+.palette {
+  display: flex;
+  gap: 2mm;
+}
+.palette > div {
+  flex: 1;
+  text-align: center;
+  font-size: 9.5pt;
+}
+.swatch {
+  height: 11mm;
+  border: 1px solid #aeb9c7;
+  margin-bottom: 1mm;
+}
+.palette small {
+  display: block;
+  font-size: 9pt;
+}
+.page-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-top: 2mm;
+  border-top: 1px solid #aeb9c7;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9pt;
+  color: #526174;
+}
+.listing {
+  display: grid;
+  gap: 2mm;
+  font-size: 11.5pt;
+}
+.listing a {
+  display: flex;
+  justify-content: space-between;
+  gap: 5mm;
+  text-decoration: none;
+  color: #182d4b;
+  border-bottom: 1px dotted #bbc4ce;
+  line-height: 1.25;
+  padding-bottom: 1mm;
+}
+.listing a span {
+  flex: 1;
+}
+.listing a b {
+  min-width: 8mm;
+  text-align: right;
+}
+.cover {
+  padding: 8mm 4mm 12mm;
+  text-align: center;
+  border: 1.5px solid #374b65;
+}
+.cover .school {
+  font-size: 14pt;
+  text-transform: uppercase;
+  line-height: 1.6;
+  margin: 0;
+}
+.cover .rule {
+  width: 38mm;
+  margin: 7mm auto 22mm;
+  border-top: 1px solid #304967;
+}
+.cover .label {
+  margin: 0 0 5mm;
+  font-size: 17pt;
+  font-weight: bold;
+}
+.cover h1 {
+  font-size: 23pt;
+  line-height: 1.35;
+  text-align: center;
+  margin: 0 0 6mm;
+}
+.cover .subtitle {
+  font-size: 16pt;
+  font-weight: bold;
+  line-height: 1.4;
+  margin: 0 0 15mm;
+}
+.cover .meta {
+  text-align: left;
+  font-size: 13pt;
+  line-height: 1.9;
+  margin-left: 18mm;
+}
+.cover .version {
+  position: absolute;
+  bottom: 24mm;
+  left: 4mm;
+  right: 4mm;
+  font-size: 11pt;
+  line-height: 1.6;
+}
+.cover .date {
+  position: absolute;
+  bottom: 10mm;
+  left: 0;
+  right: 0;
+  font-size: 13pt;
+}
+.word-note {
+  font-size: 10.5pt;
+  line-height: 1.3;
+  color: #526174;
+}
+@media print {
+  body {
+    background: white;
+  }
+  .page {
+    margin: 0;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,39 @@
+PASS v2 loads a realistic large catalogue without losing data
+PASS all management screens render; POS paginates 24 products
+PASS real product photographs load from local assets
+PASS product quantity chooser adds the requested quantity
+PASS cart quantity can be edited directly
+PASS live phone lookup still selects the customer
+PASS store voucher applies and manual discount input is removed
+PASS admin can configure a partner-scoped voucher
+PASS partner voucher does not reduce other suppliers products
+PASS partial cash payment is rejected without creating an invoice
+PASS one full payment saves an invoice without return state
+PASS reference is generated without typing
+PASS transfer confirms full invoice value
+PASS reference is generated without typing
+PASS card confirms full invoice value
+PASS returns removed from menu, roles and domain
+PASS near-expiry lots can be selected into a promotion
+PASS quantity offer is hinted under the product and applied automatically
+PASS multiple programmes combine across products and no no-discount control exists
+PASS cashier can select multiple programmes manually
+PASS invoice preserves each programme and product discount
+PASS each supplier detail includes its own searchable catalogue
+PASS Vinamilk, Acecook and all managed suppliers have matching brand catalogues
+PASS warehouse sends request but cannot approve or receive before approval
+PASS warehouse receipt reports actual short/damaged quantities without changing stock
+PASS admin approval adds only accepted stock and retains the supplier shortage
+PASS overdelivery is recorded and admin sends surplus back while receiving only the remaining order
+PASS warehouse starts a locked blind count without approval controls
+PASS saving counts reveals comparison before submission
+PASS count mismatch opens an actionable discrepancy
+PASS inventory invoice inspection shows product sales
+PASS invoice list excludes every invoice without the audited product
+PASS clicking confirm reconciliation without a note persists review and enables recount
+PASS warehouse sends the explained count to admin
+PASS admin approves the actual loss once and releases inventory locks
+PASS approved inventory shortage is deducted in month-end reconciliation
+PASS approved workflows and lot balances survive reload
+PASS consumer product POS fits a mobile screen
+PASS no uncaught browser errors

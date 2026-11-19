@@ -1,0 +1,436 @@
+{
+  "capturedAt": "2026-11-19T08:23:28.441Z",
+  "businessDate": "2026-11-19",
+  "sampleDataOnly": true,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Edg/144.0.3719.115",
+    "revision": "@4ee501a4f64e61182fd7c660df020a8c7e59655a",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0",
+    "jsVersion": "14.4.24.9"
+  },
+  "node": "v24.21.0",
+  "desktop": {
+    "width": 1440,
+    "height": 1050
+  },
+  "facts": {
+    "pages": [
+      {
+        "id": "dashboard",
+        "name": "Tổng quan"
+      },
+      {
+        "id": "pos",
+        "name": "Bán hàng POS"
+      },
+      {
+        "id": "products",
+        "name": "Sản phẩm"
+      },
+      {
+        "id": "orders",
+        "name": "Đơn hàng"
+      },
+      {
+        "id": "inventory",
+        "name": "Kho & kiểm kê"
+      },
+      {
+        "id": "purchases",
+        "name": "Nhập hàng"
+      },
+      {
+        "id": "suppliers",
+        "name": "Nhà cung cấp"
+      },
+      {
+        "id": "customers",
+        "name": "Khách hàng"
+      },
+      {
+        "id": "staff",
+        "name": "Nhân viên & tài khoản"
+      },
+      {
+        "id": "reports",
+        "name": "Báo cáo doanh thu"
+      },
+      {
+        "id": "promotions",
+        "name": "Voucher & khuyến mãi"
+      },
+      {
+        "id": "branches",
+        "name": "Chi nhánh"
+      },
+      {
+        "id": "settings",
+        "name": "Cấu hình hệ thống"
+      }
+    ],
+    "roles": {
+      "ADMIN": [
+        "dashboard",
+        "pos",
+        "products",
+        "orders",
+        "inventory",
+        "purchases",
+        "suppliers",
+        "customers",
+        "staff",
+        "reports",
+        "branches",
+        "settings",
+        "promotions"
+      ],
+      "CASHIER": [
+        "pos",
+        "orders",
+        "customers"
+      ],
+      "WAREHOUSE": [
+        "products",
+        "inventory",
+        "purchases",
+        "suppliers"
+      ]
+    },
+    "products": 186,
+    "categories": [
+      "Sữa & chế phẩm",
+      "Mì & thực phẩm khô",
+      "Gia vị",
+      "Đồ uống",
+      "Bánh kẹo",
+      "Cà phê & trà",
+      "Gạo & ngũ cốc",
+      "Vệ sinh nhà cửa",
+      "Gia dụng",
+      "Chăm sóc cá nhân"
+    ],
+    "suppliers": 22,
+    "activeSuppliers": 20,
+    "lots": 244,
+    "schema": 3
+  },
+  "captures": [
+    {
+      "name": "01-dang-nhap",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "02-tong-quan",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "03-pos",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "04-chon-so-luong",
+      "caption": "",
+      "selector": "#modal",
+      "width": 520,
+      "height": 496
+    },
+    {
+      "name": "05-tim-khach",
+      "caption": "",
+      "selector": ".cart-panel",
+      "width": 350,
+      "height": 1035.140625
+    },
+    {
+      "name": "06-nhieu-khuyen-mai",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "07-chon-nhieu-km",
+      "caption": "",
+      "selector": ".cart-panel",
+      "width": 350,
+      "height": 1241.328125
+    },
+    {
+      "name": "08-tien-mat",
+      "caption": "",
+      "selector": "#modal",
+      "width": 520,
+      "height": 790.390625
+    },
+    {
+      "name": "09-chuyen-khoan",
+      "caption": "",
+      "selector": "#modal",
+      "width": 520,
+      "height": 829.375
+    },
+    {
+      "name": "10-the",
+      "caption": "",
+      "selector": "#modal",
+      "width": 520,
+      "height": 769.984375
+    },
+    {
+      "name": "11-hoa-don",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 993.609375
+    },
+    {
+      "name": "12-don-hang",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "13-san-pham",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "14-sua-san-pham",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 812
+    },
+    {
+      "name": "15-voucher",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "16-thiet-lap-voucher",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 816
+    },
+    {
+      "name": "17-chuong-trinh",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "18-can-date",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "19-ton-kho",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "20-lo-hsd",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "21-nhap-hang",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "22-lap-yeu-cau",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 945
+    },
+    {
+      "name": "23-admin-duyet-yeu-cau",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 622.578125
+    },
+    {
+      "name": "24-khai-thuc-nhan",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 805.78125
+    },
+    {
+      "name": "25-nhan-thieu",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 872.96875
+    },
+    {
+      "name": "26-giao-du",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 945
+    },
+    {
+      "name": "27-quyet-dinh-giao-du",
+      "caption": "",
+      "selector": "#modal",
+      "width": 520,
+      "height": 521.59375
+    },
+    {
+      "name": "28-pham-vi-kiem-ke",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "29-chon-pham-vi",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 739.796875
+    },
+    {
+      "name": "30-dem-doc-lap",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 679.75
+    },
+    {
+      "name": "31-chenh-lech",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 878.140625
+    },
+    {
+      "name": "32-doi-chieu-hoa-don",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 945
+    },
+    {
+      "name": "33-chot-dem-lai",
+      "caption": "",
+      "selector": "#modal",
+      "width": 520,
+      "height": 603.59375
+    },
+    {
+      "name": "34-admin-kiem-ke",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 894.9375
+    },
+    {
+      "name": "35-doi-soat-thang",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "36-bao-cao-doanh-thu",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "37-nha-cung-cap",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "38-danh-muc-ncc",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 945
+    },
+    {
+      "name": "39-khach-hang",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "40-lich-su-khach",
+      "caption": "",
+      "selector": "#modal",
+      "width": 780,
+      "height": 656.796875
+    },
+    {
+      "name": "41-nhan-vien",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "42-chi-nhanh",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "43-cau-hinh",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "44-pos-mobile",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    },
+    {
+      "name": "45-kho-tablet",
+      "caption": "",
+      "selector": "",
+      "width": 1440,
+      "height": 1050
+    }
+  ],
+  "errors": []
+}

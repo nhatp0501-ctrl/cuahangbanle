@@ -87,4 +87,4 @@ npm run verify:assets
 
 Đây là frontend cục bộ với tài khoản mẫu và localStorage; chưa có xác thực/database máy chủ hoặc đồng bộ nhiều thiết bị. NCC và thông tin liên hệ mới là dữ liệu mẫu; việc đặt/giao hàng đối chiếu thủ công, chưa có cổng NCC. Thanh toán xác nhận thủ công, chưa gọi ngân hàng; mã HD là mã nội bộ. Hóa đơn là phiếu bán nội bộ. Thu sau hao hụt là chỉ tiêu quản trị, chưa phải lợi nhuận kế toán.
 
-PDF/Word/HTML và nội dung nguồn trong `bao-cao/` đã có trong repository, thuộc bản thiết kế trước v2; tài liệu trong `docs/` mô tả bản hiện tại.
+**Báo cáo mới:** [bao-cao/phien-ban-3](bao-cao/phien-ban-3/README.md), cập nhật ngày 19/11/2026, có PDF 69 trang, Word, HTML, ảnh hiện trạng và bằng chứng kiểm thử. Bản trước v2 ở thư mục `bao-cao/` được giữ như tài liệu lịch sử; tài liệu nghiệp vụ trong `docs/` mô tả quy trình hiện tại.

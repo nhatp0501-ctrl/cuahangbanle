@@ -1,0 +1,12 @@
+{
+  "executedAt": "2026-11-19T08:05:54.790Z",
+  "node": "v24.21.0",
+  "command": "node --test --test-reporter=spec tests/store.test.js",
+  "exitCode": 0,
+  "checks": [],
+  "counts": {
+    "tests": 41,
+    "pass": 41,
+    "fail": 0
+  }
+}

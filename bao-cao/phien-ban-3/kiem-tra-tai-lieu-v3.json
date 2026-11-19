@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-11-19T09:07:12.893Z",
+  "checks": {
+    "pdfPages": 69,
+    "htmlPages": 69,
+    "pdfPagesMatchLayout": true,
+    "noOverflow": true,
+    "allPagesHaveText": true,
+    "noReplacementCharacter": true,
+    "containsAllChapters": true,
+    "containsNewPromotions": true,
+    "containsInvoiceReconciliation": true,
+    "containsReferences": true,
+    "noObsoleteSettingsLabel": true,
+    "wordIsValid": true,
+    "wordImages": 39,
+    "wordHasAutomaticTOC": true,
+    "wordHasVietnamese": true,
+    "wordUpdatesFields": true
+  },
+  "pdfSize": 4741474,
+  "wordSize": 4055191
+}

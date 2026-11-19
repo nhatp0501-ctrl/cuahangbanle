@@ -1,0 +1,11 @@
+{
+  "name": "retailflow-report-tools",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Công cụ tái tạo báo cáo học thuật từ mã nguồn và ảnh giao diện RetailFlow",
+  "dependencies": {
+    "docx": "^9.15.4",
+    "@napi-rs/canvas": "^1.1.1",
+    "pdfjs-dist": "^6.5.438"
+  }
+}

@@ -128,4 +128,4 @@ Schema hiện tại 3, giữ khóa `retailflow.v1`. Nâng từ schema 1 tạo b�
 
 Lô cũ không có HSD phải được admin xác minh từ nhãn trước khi bán. Sao lưu JSON trong Cấu hình; dữ liệu chỉ lưu tại trình duyệt, chưa có database dùng chung. Thông tin NCC và thanh toán được nhân viên xác nhận thủ công.
 
-PDF/Word trong `bao-cao/` là báo cáo thiết kế trước v2; chưa được tạo lại cho bản v3. Tài liệu này mô tả bản đang chạy.
+PDF/Word/HTML đã được viết lại cho bản v3 tại [bao-cao/phien-ban-3](../bao-cao/phien-ban-3/README.md), ngày 19/11/2026. Các báo cáo cũ ở cấp thư mục `bao-cao/` được giữ để đối chiếu lịch sử.

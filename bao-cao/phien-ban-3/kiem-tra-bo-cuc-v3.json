@@ -1,0 +1,485 @@
+[
+  {
+    "page": 1,
+    "id": "cover",
+    "title": "THIẾT KẾ GIAO DIỆNHỆ THỐNG QUẢN LÝCỬA HÀNG BÁN LẺ",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 2,
+    "id": "s001",
+    "title": "Tóm tắt báo cáo",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 3,
+    "id": "toc-0",
+    "title": "MỤC LỤC",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 4,
+    "id": "toc-24",
+    "title": "MỤC LỤC (tiếp theo)",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 5,
+    "id": "toc-48",
+    "title": "MỤC LỤC (tiếp theo)",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 6,
+    "id": "figures-0",
+    "title": "DANH MỤC HÌNH",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 7,
+    "id": "figures-24",
+    "title": "DANH MỤC HÌNH (tiếp theo)",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 8,
+    "id": "tables-0",
+    "title": "DANH MỤC BẢNG",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 9,
+    "id": "tables-24",
+    "title": "DANH MỤC BẢNG (tiếp theo)",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 10,
+    "id": "tables-48",
+    "title": "DANH MỤC BẢNG (tiếp theo)",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 11,
+    "id": "s002",
+    "title": "Thông tin, quy ước và cách đọc",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 12,
+    "id": "s003",
+    "title": "1.1. Bài toán và lý do chọn đề tài",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 13,
+    "id": "s004",
+    "title": "1.2. Mục tiêu, đối tượng và phạm vi",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 14,
+    "id": "s005",
+    "title": "1.3. Phương pháp và cơ sở khảo sát",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 15,
+    "id": "s006",
+    "title": "2.1. Cơ sở thiết kế D1–D2 và đối thoại",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 16,
+    "id": "s007",
+    "title": "2.2. Tiêu chí đánh giá giao diện",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 17,
+    "id": "s008",
+    "title": "2.3. Khả năng tiếp cận và an toàn thông tin",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 18,
+    "id": "s009",
+    "title": "3.1. Tác nhân và ma trận quyền",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 19,
+    "id": "s010",
+    "title": "3.2. Yêu cầu chức năng và tiêu chí chấp nhận",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 20,
+    "id": "s011",
+    "title": "3.3. Quy tắc bán hàng và ưu đãi",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 21,
+    "id": "s012",
+    "title": "3.4. Quy tắc nhập, kiểm kê và báo cáo",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 22,
+    "id": "s013",
+    "title": "3.5. Dữ liệu nghiệp vụ và liên kết",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 23,
+    "id": "s014",
+    "title": "4.1. Kiến trúc giao diện và tổ chức mã",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 24,
+    "id": "s015",
+    "title": "4.2. Kiến trúc thông tin và điều hướng",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 25,
+    "id": "s016",
+    "title": "4.3. Quy chuẩn trình bày và tương tác",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 26,
+    "id": "s017",
+    "title": "4.4. Luồng bán hàng và trạng thái đơn",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 27,
+    "id": "s018",
+    "title": "4.5. Luồng nhập và đối chiếu thực nhận",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 28,
+    "id": "s019",
+    "title": "4.6. Luồng kiểm kê và đối soát tháng",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 29,
+    "id": "s020",
+    "title": "4.7. Lưu trữ, nhất quán và phục hồi",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 30,
+    "id": "s021",
+    "title": "5.1. Màn hình đăng nhập",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 31,
+    "id": "s022",
+    "title": "5.2. Khung điều hướng và tổng quan",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 32,
+    "id": "s023",
+    "title": "5.3. Bố cục bán hàng tại quầy",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 33,
+    "id": "s024",
+    "title": "5.4. Chọn số lượng và tìm khách",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 34,
+    "id": "s025",
+    "title": "5.5. Tự tính nhiều chương trình",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 35,
+    "id": "s026",
+    "title": "5.6. Chọn nhiều chương trình thủ công",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 36,
+    "id": "s027",
+    "title": "5.7. Quản lý và thiết lập voucher",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 37,
+    "id": "s028",
+    "title": "5.8. Chương trình cận date và mua đủ",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 38,
+    "id": "s029",
+    "title": "5.9. Thanh toán tiền mặt",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 39,
+    "id": "s030",
+    "title": "5.10. Chuyển khoản và thẻ",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 40,
+    "id": "s031",
+    "title": "5.11. Hóa đơn và lưu kết xuất",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 41,
+    "id": "s032",
+    "title": "5.12. Lịch sử hóa đơn",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 42,
+    "id": "s033",
+    "title": "5.13. Sản phẩm và danh mục",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 43,
+    "id": "s034",
+    "title": "5.14. Tồn kho, lô và hạn dùng",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 44,
+    "id": "s035",
+    "title": "5.15. Mở phiên và đếm độc lập",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 45,
+    "id": "s036",
+    "title": "5.16. Chênh lệch và yêu cầu xử lý",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 46,
+    "id": "s037",
+    "title": "5.17. Đối chiếu hóa đơn đúng sản phẩm",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 47,
+    "id": "s038",
+    "title": "5.18. Chốt đếm lại và admin kiểm kê",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 48,
+    "id": "s039",
+    "title": "5.19. Gợi ý nhập và danh sách yêu cầu",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 49,
+    "id": "s040",
+    "title": "5.20. Lập và duyệt yêu cầu nhập",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 50,
+    "id": "s041",
+    "title": "5.21. Thực nhận và giao thiếu",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 51,
+    "id": "s042",
+    "title": "5.22. Giao dư và quyết định xử lý",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 52,
+    "id": "s043",
+    "title": "5.23. Hồ sơ và danh mục nhà cung cấp",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 53,
+    "id": "s044",
+    "title": "5.24. Khách hàng và lịch sử mua",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 54,
+    "id": "s045",
+    "title": "5.25. Nhân viên và phân quyền",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 55,
+    "id": "s046",
+    "title": "5.26. Báo cáo và đối soát cuối tháng",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 56,
+    "id": "s047",
+    "title": "5.27. Đề xuất chi nhánh",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 57,
+    "id": "s048",
+    "title": "5.28. Cấu hình và sao lưu",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 58,
+    "id": "s049",
+    "title": "5.29. Thích ứng điện thoại và máy tính bảng",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 59,
+    "id": "s050",
+    "title": "6.1. Kế hoạch và môi trường kiểm thử",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 60,
+    "id": "s051",
+    "title": "6.2. Kết quả kiểm thử nghiệp vụ",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 61,
+    "id": "s052",
+    "title": "6.3. Kịch bản giao diện và truy vết",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 62,
+    "id": "s053",
+    "title": "6.4. Tình huống biên và phục hồi",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 63,
+    "id": "s054",
+    "title": "7.1. Đánh giá kết quả thiết kế",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 64,
+    "id": "s055",
+    "title": "7.2. Hạn chế và kế hoạch cải tiến",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 65,
+    "id": "s056",
+    "title": "Kết luận",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 66,
+    "id": "s057",
+    "title": "Tài liệu tham khảo",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 67,
+    "id": "s058",
+    "title": "A. Hướng dẫn cài đặt và trình diễn",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 68,
+    "id": "s059",
+    "title": "B. Từ điển trường dữ liệu giao diện",
+    "overflow": 0,
+    "width": 623.609375
+  },
+  {
+    "page": 69,
+    "id": "s060",
+    "title": "C. Cấu trúc bàn giao và nguồn bằng chứng",
+    "overflow": 0,
+    "width": 623.609375
+  }
+]
