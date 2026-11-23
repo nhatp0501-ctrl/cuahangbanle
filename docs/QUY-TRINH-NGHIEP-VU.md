@@ -33,9 +33,9 @@ Ví dụ mua 2 giảm 5.000đ: mua 1 chưa đủ; mua 2 hoặc 3 giảm 5.000đ;
 ### Tự động tại POS
 
 1. Thẻ hàng có gợi ý ngay bên dưới: mua bao nhiêu, giảm bao nhiêu, phạm vi lô, điều kiện đơn tối thiểu/trần giảm và số còn thiếu để đủ nhóm đầu.
-2. Chế độ **Tự động KM** áp dụng **nhiều chương trình cho các sản phẩm khác nhau**. Cùng một mã hàng chỉ nhận một chương trình, ưu tiên mức giảm tốt hơn. Tính lại số lượng/phạm vi lô, thời gian, đơn tối thiểu và trần giảm theo nhóm hàng thực áp dụng; không cộng nguyên các báo giá bị chồng lấn.
-3. Giỏ và hóa đơn hiển thị riêng tên từng chương trình, hàng áp dụng và khoản giảm; tổng giảm là tổng các chương trình đã áp dụng. Ví dụ A mua 2 giảm 5.000đ, B giảm 3.000đ → cùng hóa đơn giảm 8.000đ. Tab **Chọn nhiều KM** cho đánh dấu nhiều chương trình. Voucher thay thế nhóm chương trình, vẫn đúng phạm vi cửa hàng/đối tác.
-4. Đã bỏ nút Không giảm. Nếu chưa có chương trình đủ điều kiện, số giảm là 0 và ứng dụng tự xét lại khi thêm/bớt hàng. Bấm Tự động KM hoặc Về KM tự động để quay lại chế độ tự tính.
+2. Các khuyến mãi đủ điều kiện được tự động cộng dồn, kể cả nhiều chương trình trên cùng một mã hàng. Mỗi chương trình xét riêng số lượng/phạm vi lô, thời gian, mức tối thiểu và trần giảm trên giá gốc. Tổng giảm mỗi dòng hàng không vượt giá trị dòng; khi vượt, các khoản giảm được phân bổ lại theo tỷ lệ bằng số tiền nguyên đồng.
+3. Quầy bán chỉ có mục **Áp voucher**, không có tab Tự động KM hoặc Chọn nhiều KM. Voucher cộng thêm vào các khuyến mãi đang đủ điều kiện, vẫn đúng phạm vi cửa hàng/đối tác. Ví dụ cùng mã hàng có mua 2 giảm 5.000đ, khuyến mãi giảm 3.000đ và voucher giảm 2.000đ → tổng giảm 10.000đ nếu không vượt giá trị hàng.
+4. Giỏ và hóa đơn hiển thị riêng tên từng ưu đãi, hàng áp dụng và khoản giảm thực tế. Nếu chưa có ưu đãi đủ điều kiện, số giảm là 0 và ứng dụng tự xét lại khi thêm/bớt hàng. Nút **Bỏ voucher** chỉ gỡ voucher, các khuyến mãi vẫn tự tính.
 
 ## 4. Thanh toán và hóa đơn
 

@@ -82,7 +82,9 @@ test('FEFO sells the earliest valid lot and refuses expired, undated and quarant
   assert.equal(s.data.lots.find((l) => l.code === 'NEAR').qty, 1);
 });
 test('store voucher discounts the whole basket, partner voucher only that partner products', () => {
+  // Isolate voucher scope here; cumulative voucher/programme behaviour is covered separately.
   const { s, p } = fixture();
+  s.data.promotions.forEach((rule) => (rule.active = false));
   const other = s.data.products.find(
     (x) => x.active && x.supplierId !== p.supplierId && s.saleableStock(x.id) > 5,
   );

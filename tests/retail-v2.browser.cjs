@@ -53,12 +53,15 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
     `store.data.draft.customerId==='KH001'`,
     'live phone lookup still selects the customer',
   );
-  await click('[data-action="discount-tab"][data-kind="voucher"]');
+  await check(
+    `document.querySelectorAll('#voucher-code').length===1 && document.querySelector('.discount-picker h3').textContent==='Áp voucher' && !document.querySelector('[data-action="discount-tab"], [data-promotion-select]')`,
+    'one voucher section is always visible without automatic or manual promotion tabs',
+  );
   await fill('#voucher-code', 'CHAOMUNG');
   await click('[data-action="voucher-apply"]');
   await check(
-    `store.quoteDraft().discount===10000`,
-    'store voucher applies and manual discount input is removed',
+    `store.quoteDraft().appliedPromotions.find(r=>r.kind==='voucher').discount===10000 && document.querySelector('#voucher-code').value==='CHAOMUNG'`,
+    'store voucher applies alongside automatic promotions and its code stays visible',
   );
   await evaluate(`navigate('promotions')`);
   await click('[data-action="discount-new"][data-kind="voucher"]');
@@ -77,11 +80,10 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
   await evaluate(
     `navigate('pos');const other=store.data.products.find(p=>p.active&&p.supplierId!==${JSON.stringify(supplier)}&&store.saleableStock(p.id)>2);addCart(other.id,2)`,
   );
-  await click('[data-action="discount-tab"][data-kind="voucher"]');
   await fill('#voucher-code', 'PARTNER10');
   await click('[data-action="voucher-apply"]');
   await check(
-    `store.quoteDraft().items.filter(i=>store.data.products.find(p=>p.id===i.id).supplierId!==${JSON.stringify(supplier)}).every(i=>i.lineDiscount===0)`,
+    `store.quoteDraft().appliedPromotions.find(r=>r.kind==='voucher').productIds.every(id=>store.data.products.find(p=>p.id===id).supplierId===${JSON.stringify(supplier)})`,
     'partner voucher does not reduce other suppliers products',
   );
   await screenshot('v2-pos.png');
@@ -148,19 +150,26 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
     `store.quoteDraft().discount===8000 && document.querySelectorAll('[data-applied-promotion]').length===2 && !document.querySelector('[data-kind="none"]')`,
     'multiple programmes combine across products and no no-discount control exists',
   );
-  await click('[data-action="discount-tab"][data-kind="promotion"]');
-  await click('[data-promotion-select]');
-  await click('[data-promotion-select]:not(:checked)');
+  await evaluate(
+    `store.upsertDiscount('promotion',{name:'KM cộng dồn cùng mã',type:'fixed',value:2000,minSpend:0,maxDiscount:0,startsOn:Retail.today(),endsOn:Retail.addDays(5),active:true,productIds:[${JSON.stringify(pid)}],lotIds:[]});render()`,
+  );
+  await fill('#voucher-code', 'CHAOMUNG');
+  await click('[data-action="voucher-apply"]');
   await check(
-    `store.data.draft.discountSelection.kind==='promotions'&&store.quoteDraft().appliedPromotions.length===2`,
-    'cashier can select multiple programmes manually',
+    `store.quoteDraft().discount===20000 && store.quoteDraft().appliedPromotions.length===4 && document.querySelectorAll('[data-applied-promotion]').length===4`,
+    'overlapping promotions stack automatically together with the voucher',
+  );
+  await click('[data-action="discount-clear"]');
+  await check(
+    `store.quoteDraft().discount===10000 && store.quoteDraft().appliedPromotions.length===3 && !document.querySelector('[data-action="discount-clear"]')`,
+    'removing the voucher preserves every automatic promotion',
   );
   await screenshot('multi-promotion-cart.png');
   await click('[data-action="checkout"]');
   await fill('#cash-input', 99999999);
   await submit('checkout-form');
   await check(
-    `document.querySelector('#modal').textContent.includes('Các chương trình đã áp dụng')&&store.data.orders[0].appliedPromotions.length===2`,
+    `document.querySelector('#modal').textContent.includes('Các chương trình đã áp dụng')&&store.data.orders[0].appliedPromotions.length===3 && document.querySelector('#modal').textContent.includes('KM cộng dồn cùng mã')`,
     'invoice preserves each programme and product discount',
   );
   await click('[data-action="close-modal"]');

@@ -1,10 +1,4 @@
-let posProductPage = 1,
-  discountTab =
-    store.data.draft.discountSelection?.kind === 'promotions'
-      ? 'promotion'
-      : store.data.draft.discountSelection?.kind === 'none'
-        ? 'auto'
-        : store.data.draft.discountSelection?.kind || 'auto';
+let posProductPage = 1;
 function posView() {
   const s = store.data,
     d = s.draft,

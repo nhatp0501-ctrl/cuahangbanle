@@ -97,13 +97,20 @@ function receiptHTML(o) {
         (i) =>
           '<tr><td>' +
           e(i.name) +
-          (i.appliedPromotion
-            ? '<div class="sub">' +
-              e(i.appliedPromotion.name) +
-              ' · −' +
-              money(i.lineDiscount) +
-              '</div>'
-            : '') +
+          (i.appliedPromotions?.length
+            ? i.appliedPromotions
+                .map(
+                  (rule) =>
+                    '<div class="sub">' + e(rule.name) + ' · −' + money(rule.discount) + '</div>',
+                )
+                .join('')
+            : i.appliedPromotion
+              ? '<div class="sub">' +
+                e(i.appliedPromotion.name) +
+                ' · −' +
+                money(i.lineDiscount) +
+                '</div>'
+              : '') +
           '</td><td>' +
           i.qty +
           '</td><td>' +

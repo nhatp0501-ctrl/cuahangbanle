@@ -27,7 +27,7 @@ test('minimum monetary discount and cap are 1000; percent under 1000 cannot appl
   programme(s, p, { value: 1000 });
   assert.throws(() => programme(s, p, { value: 999 }), /1.000/);
 });
-test('quantity promotion repeats per same-SKU group, excludes unrelated and incomplete SKU, and auto chooses best', () => {
+test('quantity promotion repeats per same-SKU group, excludes incomplete SKU, and stacks automatically', () => {
   const { s, p } = fixture(),
     other = s.data.products.find((x) => x.active && x.id !== p.id && s.saleableStock(x.id) > 5);
   s.data.promotions.forEach((r) => (r.active = false));
@@ -44,7 +44,7 @@ test('quantity promotion repeats per same-SKU group, excludes unrelated and inco
     q.total,
   );
   programme(s, p, { name: 'Giảm 12k', type: 'fixed', value: 12000 });
-  assert.equal(s.quoteDraft().discount, 12000);
+  assert.equal(s.quoteDraft().discount, 22000);
   draft(s, p, 1, { kind: 'promotion', id: rule.id });
   assert.throws(() => s.quoteDraft(), /mua đủ/);
 });

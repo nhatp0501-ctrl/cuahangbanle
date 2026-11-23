@@ -5,13 +5,16 @@
   const { totals, allocateInteger: allocate } =
     typeof module !== 'undefined' && module.exports ? require('./calculations.js') : scope.Retail;
   const methods = {
-    quoteDraft(draft = this.data.draft) {
+    quoteDraft(draft = this.data.draft, { singleRule = false } = {}) {
       const selection = draft.discountSelection || { kind: 'none', id: '' };
-      if (['auto', 'promotions'].includes(selection.kind))
+      if (
+        ['auto', 'promotions'].includes(selection.kind) ||
+        (selection.kind === 'voucher' && !singleRule)
+      )
         return this.quotePromotions(
           draft,
           this.data.promotions.filter(
-            (p) => selection.kind === 'auto' || selection.ids?.includes(p.id),
+            (p) => selection.kind !== 'promotions' || selection.ids?.includes(p.id),
           ),
         );
       assert(['none', 'voucher', 'promotion'].includes(selection.kind), 'Chọn một loại giảm giá.');

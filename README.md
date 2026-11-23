@@ -53,7 +53,7 @@ src/domain/                       Quy tắc nghiệp vụ dùng chung với ki�
   operational-migrations.js        Nâng cấp NCC, ưu đãi và quy trình v3
   lots.js                         FEFO, HSD, số bán được
   discounts.js                    Voucher, phạm vi, mua đủ số lượng, chọn KM tự động
-  promotion-combinations.js       Tính kết hợp nhiều chương trình, tránh giảm chồng
+  promotion-combinations.js       Cộng dồn khuyến mãi và voucher, giới hạn theo giá trị hàng
   supplier-matching.js            Sửa danh mục và kiểm tra thương hiệu theo NCC
   sales.js                        Giỏ, đơn tạm, thanh toán, mã HD tự sinh
   purchases.js                    Yêu cầu, duyệt, thiếu/dư và thực nhận

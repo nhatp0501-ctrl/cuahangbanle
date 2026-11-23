@@ -65,18 +65,20 @@ test('different products receive multiple programmes with exact tax, invoice sna
   assert.equal(reloaded.data.orders[0].appliedPromotions.length, 2);
   validateBackup(reloaded.data);
 });
-test('overlapping programmes use one discount per SKU while keeping other products offers', () => {
+test('overlapping programmes stack on the same SKU while keeping other products offers', () => {
   const { s, p, other } = pair();
   promo(s, [p], { value: 2000 });
-  const winner = promo(s, [p], { value: 7000 });
+  const second = promo(s, [p], { value: 7000 });
   promo(s, [other], { value: 3000 });
   basket(s, p, other);
   const q = s.quoteDraft();
-  assert.equal(q.discount, 10000);
-  assert.equal(q.appliedPromotions.length, 2);
-  assert.equal(q.items[0].appliedPromotion.id, winner.id);
+  assert.equal(q.discount, 12000);
+  assert.equal(q.appliedPromotions.length, 3);
+  assert.equal(q.items[0].lineDiscount, 9000);
+  assert.equal(q.items[0].appliedPromotions.length, 2);
+  assert.ok(q.items[0].appliedPromotions.some((rule) => rule.id === second.id));
 });
-test('shared caps and minimum spending are rechecked for actual assigned products', () => {
+test('shared caps apply once per programme when stacking across products', () => {
   const { s, p, other } = pair();
   const broad = promo(s, [p, other], {
     type: 'percent',
@@ -96,7 +98,7 @@ test('shared caps and minimum spending are rechecked for actual assigned product
   promo(s, [other], { value: 4000 });
   assert.equal(
     s.quoteDraft().discount,
-    8000 + Math.max(4000, Math.min(5000, Math.floor(other.price * 2 * 0.2))),
+    8000 + 4000 + 5000,
   );
 });
 test('manual selection accepts multiple programme IDs and ignores programmes outside selection', () => {
@@ -106,6 +108,100 @@ test('manual selection accepts multiple programme IDs and ignores programmes out
   promo(s, [p], { value: 9000 });
   basket(s, p, other, { kind: 'promotions', ids: [a.id, b.id] });
   assert.equal(s.quoteDraft().discount, 7000);
+});
+test('voucher stacks with overlapping promotions and preserves tax, usage and invoice snapshots', () => {
+  const { s, p, other, storage } = pair();
+  s.saveSettings({ ...s.data.settings, taxRate: 8 });
+  promo(s, [p], { value: 4000 });
+  promo(s, [p], { type: 'quantity', buyQty: 2, value: 3000 });
+  const v = voucher(s, { code: 'STACK', type: 'fixed', value: 2000 });
+  basket(s, p, other, { kind: 'voucher', id: v.id });
+  const q = s.quoteDraft();
+  assert.equal(q.discount, 9000);
+  assert.equal(q.appliedPromotions.length, 3);
+  assert.equal(q.items[0].appliedPromotions.length, 3);
+  assert.equal(q.tax, Math.round((q.subtotal - 9000) * 0.08));
+  assert.equal(q.items.reduce((sum, i) => sum + i.paidTotal, 0), q.total);
+  const key = s.data.draft.checkoutKey;
+  const order = s.checkout({ payment: 'cash', received: 99999999, checkoutKey: key });
+  assert.equal(v.used, 1);
+  s.checkout({ payment: 'cash', received: 99999999, checkoutKey: key });
+  assert.equal(v.used, 1);
+  assert.deepEqual(order.appliedPromotions, q.appliedPromotions);
+  const reloaded = new Store(storage);
+  assert.deepEqual(reloaded.data.orders[0].items[0].appliedPromotions, q.items[0].appliedPromotions);
+  validateBackup(reloaded.data);
+  const withoutVoucher = s.quoteDraft({ ...clone(order), discountSelection: { kind: 'auto', id: '' } });
+  assert.equal(withoutVoucher.discount, 7000);
+});
+test('stacked partner voucher stays within its product scope while other products keep promotions', () => {
+  const { s, p, other } = pair();
+  promo(s, [p], { value: 3000 });
+  promo(s, [other], { value: 4000 });
+  const v = voucher(s, {
+    code: 'PARTNERSTACK',
+    source: 'partner',
+    partnerSupplierId: p.supplierId,
+    productIds: [p.id],
+  });
+  basket(s, p, other, { kind: 'voucher', id: v.id });
+  const q = s.quoteDraft();
+  assert.equal(q.discount, 7000 + Math.floor(p.price * 2 * 0.1));
+  assert.equal(q.items[1].lineDiscount, 4000);
+  assert.deepEqual(q.appliedPromotions.find((rule) => rule.id === v.id).productIds, [p.id]);
+});
+test('stacked discounts cap each line and reconcile every programme without leaking to other products', () => {
+  const { s, p, other } = pair();
+  s.saveSettings({ ...s.data.settings, taxRate: 8 });
+  promo(s, [p], { type: 'percent', value: 100 });
+  promo(s, [p], { value: 999999 });
+  promo(s, [other], { value: 3000 });
+  const v = voucher(s, {
+    code: 'CAPPEDSTACK',
+    source: 'partner',
+    partnerSupplierId: p.supplierId,
+    productIds: [p.id],
+    value: 100,
+  });
+  basket(s, p, other, { kind: 'voucher', id: v.id });
+  const q = s.quoteDraft();
+  assert.equal(q.discount, p.price * 2 + 3000);
+  assert.equal(q.items[0].paidTotal, 0);
+  assert.equal(q.items[1].lineDiscount, 3000);
+  assert.equal(q.appliedPromotions.reduce((sum, r) => sum + r.discount, 0), q.discount);
+  for (const item of q.items) {
+    assert.ok(Number.isSafeInteger(item.lineDiscount) && item.lineDiscount <= item.qty * item.price);
+    assert.ok(item.lineTax >= 0 && item.paidTotal >= 0);
+    assert.equal(item.appliedPromotions.reduce((sum, r) => sum + r.discount, 0), item.lineDiscount);
+  }
+  assert.equal(q.items.reduce((sum, i) => sum + i.paidTotal, 0), q.total);
+  s.data.promotions.reverse();
+  assert.equal(s.quoteDraft().discount, q.discount);
+});
+test('fully discounted carts have zero tax and never produce negative totals', () => {
+  const { s, p } = pair();
+  promo(s, [p], { type: 'percent', value: 100 });
+  promo(s, [p], { type: 'percent', value: 100 });
+  draft(s, p, 2, { kind: 'auto', id: '' });
+  const q = s.quoteDraft();
+  assert.equal(q.discount, q.subtotal);
+  assert.equal(q.tax, 0);
+  assert.equal(q.total, 0);
+});
+test('stacking ignores ineligible programmes while still rejecting invalid vouchers', () => {
+  const { s, p } = pair();
+  const valid = promo(s, [p], { value: 3000 });
+  promo(s, [p], { active: false });
+  promo(s, [p], { startsOn: addDays(1) });
+  promo(s, [p], { endsOn: addDays(-1) });
+  promo(s, [p], { minSpend: p.price * 3 });
+  promo(s, [p], { type: 'quantity', buyQty: 3 });
+  draft(s, p, 2, { kind: 'auto', id: '' });
+  assert.equal(s.quoteDraft().discount, 3000);
+  assert.deepEqual(s.quoteDraft().appliedPromotions.map((r) => r.id), [valid.id]);
+  const v = voucher(s, { code: 'EXPIREDSTACK', endsOn: addDays(-1) });
+  draft(s, p, 2, { kind: 'voucher', id: v.id });
+  assert.throws(() => s.quoteDraft(), /hết hạn/);
 });
 test('a shared minimum-spend offer still combines with a third unrelated product promotion', () => {
   const { s, p, other } = pair();
@@ -129,8 +225,8 @@ test('a shared minimum-spend offer still combines with a third unrelated product
   d.items.push({ id: third.id, name: third.name, price: third.price, qty: 2 });
   s.saveDraft(d);
   const q = s.quoteDraft();
-  assert.equal(q.discount, 18000);
-  assert.equal(q.appliedPromotions.length, 2);
+  assert.equal(q.discount, 32000);
+  assert.equal(q.appliedPromotions.length, 3);
 });
 test('invoice reconciliation excludes every unrelated invoice and confirms without a note', () => {
   const { s, p, other } = pair();
