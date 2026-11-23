@@ -126,13 +126,26 @@ module.exports = async function ({ evaluate, command, click, fill, submit, check
   );
   await login('admin');
   await evaluate(`navigate('promotions')`);
+  await click('[data-action="discount-new"][data-kind="promotion"]');
+  await check(
+    `!!document.querySelector('#discount-form [data-list-filter]') && !!document.querySelector('#discount-form input[type="checkbox"][name="productIds"]')`,
+    'creating a promotion directly still allows choosing products',
+  );
+  await click('[data-action="close-modal"]');
   await click('[data-action="discount-manage-tab"][data-tab="near"]');
+  const chosenLotId = await evaluate(
+    `document.querySelector('[data-action="promotion-lot"]').dataset.id`,
+  );
   await click('[data-action="promotion-lot"]');
+  await check(
+    `(()=>{const form=document.querySelector('#discount-form'),lot=store.data.lots.find(l=>l.id===${JSON.stringify(chosenLotId)}),fd=new FormData(form);return !form.querySelector('[data-list-filter],input[type="checkbox"][name="productIds"],input[type="checkbox"][name="lotIds"]') && fd.getAll('productIds').length===1 && fd.get('productIds')===lot.productId && fd.getAll('lotIds').length===1 && fd.get('lotIds')===lot.id && form.textContent.includes(lot.code) && form.textContent.includes(store.data.products.find(p=>p.id===lot.productId).name)})()`,
+    'promotion setup displays the chosen product and lot without selection or filtering',
+  );
   await fill('[name="name"]', 'Chương trình cận date tại quầy');
   await submit('discount-form');
   await check(
-    `store.data.promotions.some(p=>p.name==='Chương trình cận date tại quầy'&&p.lotIds.length>0)`,
-    'near-expiry lots can be selected into a promotion',
+    `store.data.promotions.some(p=>p.name==='Chương trình cận date tại quầy'&&p.lotIds.length===1&&p.lotIds[0]===${JSON.stringify(chosenLotId)}&&p.productIds.length===1&&p.productIds[0]===store.data.lots.find(l=>l.id===${JSON.stringify(chosenLotId)}).productId)`,
+    'saving a near-expiry promotion preserves exactly the chosen product and lot',
   );
 
   await evaluate(

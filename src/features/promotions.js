@@ -173,7 +173,10 @@ function discountModal(kind, discountId = '', lotId = '') {
       '',
       true,
     );
-  if (kind === 'promotion')
+  if (kind === 'promotion' && chosenLot) {
+    const product = store.data.products.find((p) => p.id === chosenLot.productId);
+    fields += `<div class="full"><h3>Sản phẩm áp dụng</h3><div class="note"><strong>${e(product?.name)}</strong><div class="sub">Lô ${e(chosenLot.code)} · HSD ${expiryText(chosenLot.expiryDate)} · ${chosenLot.qty - chosenLot.blockedQty} sản phẩm</div><p>Chương trình áp dụng cho sản phẩm và lô đã chọn.</p></div><input type="hidden" name="productIds" value="${e(chosenLot.productId)}"><input type="hidden" name="lotIds" value="${e(chosenLot.id)}"></div>`;
+  } else if (kind === 'promotion')
     fields += `<div class="full"><h3>Sản phẩm áp dụng</h3><input data-list-filter placeholder="Lọc sản phẩm…" aria-label="Lọc sản phẩm khuyến mãi">${productChecklist(
       'productIds',
       store.data.products.filter((p) => p.active),
